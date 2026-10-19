@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+   
 
     <title>New Desi Tadka</title>
+    
     <link rel="icon" type="image/png" href="/images/logo.png">
     <style>
         :root {
@@ -468,6 +469,23 @@
             color: var(--muted);
         }
 
+        .onboard-restaurant-btn {
+  background: linear-gradient(135deg, #ff8a00, #ff5e00);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboard-restaurant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 110, 0, 0.3);
+}
+
         /* =========================
    MODAL
 ========================= */
@@ -685,6 +703,14 @@
                 </small>
 
             </div>
+
+            <button
+  type="button"
+  id="onboardRestaurantBtn"
+  class="onboard-restaurant-btn"
+>
+  + Onboard New Restaurant
+</button>
 
             <div class="actions">
 
