@@ -678,6 +678,7 @@
                 `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
         });
 
+        const submitButton = form.querySelector('button[type="submit"]');
         form.addEventListener("submit", async event => {
             event.preventDefault();
             if (!form.reportValidity()) return;
