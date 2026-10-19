@@ -708,6 +708,7 @@
   type="button"
   id="onboardRestaurantBtn"
   class="onboard-restaurant-btn"
+  onclick="goToRestaurantOnboarding(event)"
 >
   + Onboard New Restaurant
 </button>
@@ -1610,11 +1611,18 @@
                 }
             );
 
-        document
-    .getElementById("onboardRestaurantBtn")
-    .addEventListener("click", function () {
-      window.location.href = "/onboard-restaurant";
-    });
+        // Navigate to the restaurant onboarding page.
+        // Use the current site's origin so this works on localhost and Vercel.
+        function goToRestaurantOnboarding(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            window.location.assign(
+                new URL("/onboard-restaurant", window.location.origin).href
+            );
+        }
 
         // =========================
         // ADD / EDIT SUBMIT
