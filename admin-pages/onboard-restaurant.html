@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Onboard Restaurant | VignaDigital</title>
+
+    <style>
+        :root {
+            --background: #111113;
+            --sidebar: #0d0d0f;
+            --card: #1b1b20;
+            --border: #303036;
+            --text: #f7f7fa;
+            --muted: #a0a0ad;
+            --orange: #ff642d;
+            --orange-dark: #392016;
+            --input: #1b1b20;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 275px;
+            flex-shrink: 0;
+            padding: 25px 20px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            background: var(--orange);
+            border-radius: 10px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .brand h2 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .brand p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 14px 15px;
+            margin-bottom: 7px;
+            color: #c4c4ce;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        .nav-link.active {
+            color: white;
+            background: var(--orange-dark);
+        }
+
+        .nav-link.active::before {
+            content: "+";
+            margin-right: 14px;
+            color: var(--orange);
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px;
+        }
+
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .form-card {
+            margin-top: 27px;
+            padding: 25px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .section-title {
+            margin: 0 0 22px;
+            font-size: 19px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px 17px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .optional {
+            color: var(--muted);
+            font-weight: normal;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-width: 0;
+            height: 49px;
+            padding: 0 13px;
+            color: var(--text);
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--orange);
+        }
+
+        input[type="file"] {
+            height: auto;
+            padding: 13px;
+        }
+
+        input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--orange);
+        }
+
+        .password-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .password-row input {
+            flex: 1;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 18px;
+            font-weight: 600;
+        }
+
+        .secondary-btn {
+            color: white;
+            background: #29292f;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .orange-btn {
+            background: var(--orange);
+            color: #111;
+        }
+
+        .section-divider {
+            margin: 28px 0;
+            border: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .source-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .source-tab {
+            color: #d0d0d8;
+            background: #25252b;
+            border: 1px solid var(--border);
+        }
+
+        .source-tab.active {
+            color: white;
+            border-color: var(--orange);
+            background: var(--orange-dark);
+        }
+
+        .source-panel {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #17171b;
+        }
+
+        .source-panel h3 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .help-text {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .website-url {
+            margin-top: 22px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #131316;
+            border: 1px solid var(--border);
+        }
+
+        .website-url strong {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .website-url span {
+            color: var(--orange);
+            overflow-wrap: anywhere;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .checkbox-row label {
+            margin: 0;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid var(--border);
+        }
+
+        .status {
+            color: var(--muted);
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .submit-btn {
+            min-height: 53px;
+            padding: 0 26px;
+            background: var(--orange);
+            color: #111;
+            font-size: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1050px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .brand {
+                margin-bottom: 15px;
+            }
+
+            .main {
+                padding: 23px 15px;
+            }
+
+            .page-heading h1 {
+                font-size: 25px;
+            }
+
+            .form-card {
+                padding: 17px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .password-row,
+            .bottom-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .password-row button,
+            .submit-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">V</div>
+
+                <div>
+                    <h2>VignaDigital</h2>
+                    <p>Admin console</p>
+                </div>
+            </div>
+
+            <nav>
+                <a class="nav-link" href="/admin">Restaurants</a>
+                <a class="nav-link active" href="/onboard-restaurant">
+                    Onboard restaurant
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+
+            <header class="page-heading">
+                <h1>Onboard restaurant</h1>
+                <p>Create a restaurant and configure its customer website.</p>
+            </header>
+
+            <form id="onboardingForm">
+
+                <section class="form-card">
+                    <h2 class="section-title">Restaurant details</h2>
+
+                    <div class="form-grid">
+
+                        <div class="field">
+                            <label for="restaurantName">Restaurant name</label>
+                            <input id="restaurantName" name="restaurantName" required placeholder="New Desi Tadka">
+                        </div>
+
+                        <div class="field">
+                            <label for="ownerName">Owner name</label>
+                            <input id="ownerName" name="ownerName" required placeholder="Restaurant owner">
+                        </div>
+
+                        <div class="field">
+                            <label for="mobile">Mobile number · Login ID</label>
+                            <input id="mobile" name="mobile" required inputmode="numeric" pattern="[0-9]{10}"
+                                maxlength="10" placeholder="9876543210">
+                        </div>
+
+                        <div class="field">
+                            <label for="email">
+                                Email <span class="optional">· optional</span>
+                            </label>
+                            <input id="email" name="email" type="email" placeholder="owner@example.com">
+                        </div>
+
+                        <div class="field">
+                            <label for="city">City</label>
+                            <input id="city" name="city" required placeholder="Chennai">
+                        </div>
+
+                        <div class="field">
+                            <label for="slug">Website slug</label>
+                            <input id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                                placeholder="new-desi-tadka">
+                        </div>
+
+                        <div class="field">
+                            <label for="price">Onboarding price (₹)</label>
+                            <input id="price" name="price" type="number" min="0" step="0.01" value="0" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="plan">Plan</label>
+                            <select id="plan" name="plan">
+                                <option value="one-time">One time</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="password">
+                                Login password
+                                <span class="optional">· optional</span>
+                            </label>
+
+                            <div class="password-row">
+                                <input id="password" name="password" type="text" autocomplete="new-password"
+                                    placeholder="Generate a password">
+
+                                <button class="secondary-btn" id="generatePassword" type="button">
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="checkbox-row">
+                        <input id="paymentReceived" name="paymentReceived" type="checkbox">
+
+                        <label for="paymentReceived">
+                            Onboarding payment received
+                        </label>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <h2 class="section-title">Restaurant website setup</h2>
+
+                    <div class="source-tabs">
+                        <button type="button" class="source-tab active" data-source="upload" aria-pressed="true">
+                            📁 Upload Files
+                        </button>
+
+                        <button type="button" class="source-tab" data-source="github" aria-pressed="false">
+                            GitHub Import
+                        </button>
+                    </div>
+
+                    <div class="source-panel" id="uploadPanel">
+
+                        <h3>Upload restaurant website</h3>
+
+                        <p class="help-text">
+                            Select a ZIP containing the customer-facing
+                            website, including index.html, CSS, JavaScript,
+                            images, and other required static assets.
+                        </p>
+
+                        <label for="websiteZip">Website ZIP file</label>
+
+                        <input type="file" id="websiteZip" name="websiteZip"
+                            accept=".zip,application/zip,application/x-zip-compressed">
+
+                        <p class="help-text" id="fileInfo">
+                            No file selected.
+                        </p>
+
+                    </div>
+
+                    <div class="source-panel hidden" id="githubPanel">
+
+                        <h3>Import from GitHub</h3>
+
+                        <p class="help-text">
+                            Enter the repository containing the restaurant
+                            website. Public repositories can be imported
+                            without exposing a personal access token.
+                            Private repositories require secure server-side
+                            GitHub authentication.
+                        </p>
+
+                        <div class="field">
+                            <label for="repositoryUrl">Repository URL</label>
+
+                            <input type="url" id="repositoryUrl" name="repositoryUrl"
+                                placeholder="https://github.com/username/repository">
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 20px;">
+
+                            <div class="field">
+                                <label for="branch">Branch</label>
+
+                                <input id="branch" name="branch" value="main" placeholder="main">
+                            </div>
+
+                            <div class="field">
+                                <label for="websiteFolder">
+                                    Website folder
+                                    <span class="optional">· optional</span>
+                                </label>
+
+                                <input id="websiteFolder" name="websiteFolder" placeholder="dist or public">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="website-url">
+                        <strong>Proposed customer website URL</strong>
+                        <span id="websiteUrl">
+                            https://vignadigital.com/your-restaurant
+                        </span>
+                    </div>
+
+                    <div class="bottom-bar">
+
+                        <div id="status" class="status" role="status" aria-live="polite">
+                            Complete the details and choose a website source.
+                        </div>
+
+                        <button class="submit-btn" type="submit">
+                            Create restaurant &amp; login
+                        </button>
+
+                    </div>
+
+                </section>
+
+            </form>
+
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById("onboardingForm");
+        const restaurantName = document.getElementById("restaurantName");
+        const slugInput = document.getElementById("slug");
+        const websiteUrl = document.getElementById("websiteUrl");
+        const status = document.getElementById("status");
+
+        const uploadPanel = document.getElementById("uploadPanel");
+        const githubPanel = document.getElementById("githubPanel");
+
+        const websiteZip = document.getElementById("websiteZip");
+        const repositoryUrl = document.getElementById("repositoryUrl");
+
+        let selectedSource = "upload";
+
+        function createSlug(value) {
+            return value
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+        function updateWebsiteUrl() {
+            const slug = slugInput.value.trim();
+
+            websiteUrl.textContent = slug
+                ? `https://vignadigital.com/${slug}`
+                : "Enter a restaurant slug";
+        }
+
+        restaurantName.addEventListener("input", () => {
+            if (!slugInput.dataset.edited) {
+                slugInput.value = createSlug(restaurantName.value);
+            }
+
+            updateWebsiteUrl();
+        });
+
+        slugInput.addEventListener("input", () => {
+            slugInput.dataset.edited = "true";
+            slugInput.value = createSlug(slugInput.value);
+            updateWebsiteUrl();
+        });
+
+        document.querySelectorAll(".source-tab").forEach(button => {
+            button.addEventListener("click", () => {
+                selectedSource = button.dataset.source;
+
+                document.querySelectorAll(".source-tab").forEach(tab => {
+                    const active = tab === button;
+
+                    tab.classList.toggle("active", active);
+                    tab.setAttribute("aria-pressed", String(active));
+                });
+
+                uploadPanel.classList.toggle(
+                    "hidden",
+                    selectedSource !== "upload"
+                );
+
+                githubPanel.classList.toggle(
+                    "hidden",
+                    selectedSource !== "github"
+                );
+
+                websiteZip.required = selectedSource === "upload";
+                repositoryUrl.required = selectedSource === "github";
+
+                status.textContent = selectedSource === "upload"
+                    ? "Choose a ZIP file containing the website."
+                    : "Enter the GitHub repository URL.";
+            });
+        });
+
+        document.getElementById("generatePassword").addEventListener(
+            "click",
+            () => {
+                const randomBytes = new Uint8Array(18);
+                crypto.getRandomValues(randomBytes);
+
+                const password = Array.from(
+                    randomBytes,
+                    byte => byte.toString(36).padStart(2, "0")
+                ).join("").slice(0, 20);
+
+                document.getElementById("password").value = password;
+            }
+        );
+
+        websiteZip.addEventListener("change", () => {
+            const file = websiteZip.files[0];
+
+            if (!file) {
+                document.getElementById("fileInfo").textContent =
+                    "No file selected.";
+                return;
+            }
+
+            document.getElementById("fileInfo").textContent =
+                `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+        });
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (!form.reportValidity()) {
+                return;
+            }
+
+            const payload = {
+                restaurantName: restaurantName.value.trim(),
+                ownerName: document.getElementById("ownerName").value.trim(),
+                mobile: document.getElementById("mobile").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                city: document.getElementById("city").value.trim(),
+                slug: slugInput.value.trim(),
+                price: Number(document.getElementById("price").value),
+                plan: document.getElementById("plan").value,
+                paymentReceived:
+                    document.getElementById("paymentReceived").checked,
+                websiteSource: selectedSource,
+                repositoryUrl: repositoryUrl.value.trim(),
+                branch: document.getElementById("branch").value.trim(),
+                websiteFolder:
+                    document.getElementById("websiteFolder").value.trim()
+            };
+
+            if (selectedSource === "upload" && !websiteZip.files.length) {
+                status.textContent = "Please select a website ZIP file.";
+                return;
+            }
+
+            if (
+                selectedSource === "github" &&
+                !payload.repositoryUrl
+            ) {
+                status.textContent = "Please enter a GitHub repository URL.";
+                return;
+            }
+
+            status.textContent = "Creating restaurant...";
+
+            const submitButton = form.querySelector(
+                'button[type="submit"]'
+            );
+
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch("/api/restaurants", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Restaurant creation failed."
+                    );
+                }
+
+                status.textContent =
+                    `Restaurant "${result.restaurant.restaurant_name}" created. ` +
+                    "Website publishing is the next step.";
+
+                alert(
+                    "Restaurant created successfully!\n\n" +
+                    "Restaurant: " + result.restaurant.restaurant_name + "\n" +
+                    "Website URL: https://vignadigital.com/" +
+                    result.restaurant.slug
+                );
+
+            } catch (error) {
+                status.textContent = error.message;
+
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+
+        updateWebsiteUrl();
+    </script>
+
+</body>
+
+</html>

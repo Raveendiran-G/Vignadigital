@@ -1,0 +1,1234 @@
+[
+  {
+    "name": "Aloo Golden Fry",
+    "category": "Starters",
+    "price": 193,
+    "description": "Indian Starters",
+    "image": "aloo-golden-fry.jpg"
+  },
+  {
+    "name": "Gobi 65",
+    "category": "Starters",
+    "price": 197,
+    "description": "Indian Starters",
+    "image": "gobi-65.jpg"
+  },
+  {
+    "name": "Paneer 65",
+    "category": "Starters",
+    "price": 208,
+    "description": "Indian Starters",
+    "image": "paneer-65.jpg"
+  },
+  {
+    "name": "Mushroom 65",
+    "category": "Starters",
+    "price": 238,
+    "description": "Indian Starters",
+    "image": "mushroom-65.jpg"
+  },
+  {
+    "name": "Babycorn 65",
+    "category": "Starters",
+    "price": 204,
+    "description": "Indian Starters",
+    "image": "babycorn-65.jpg"
+  },
+  {
+    "name": "Aloo Chatpata",
+    "category": "Starters",
+    "price": 147,
+    "description": "Indian Starters",
+    "image": "aloo-chatpata.jpg"
+  },
+  {
+    "name": "Masala Papad",
+    "category": "Starters",
+    "price": 122,
+    "description": "Indian Starters",
+    "image": "masala-papad.jpg"
+  },
+  {
+    "name": "Paneer Crispy",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "paneer-crispy.jpg"
+  },
+  {
+    "name": "Paneer Pepper Salt",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "paneer-pepper-salt.jpg"
+  },
+  {
+    "name": "Paneer Dragon",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "paneer-dragon.jpg"
+  },
+  {
+    "name": "Paneer Chilly/Garlic/Ginger",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "paneer-chilly-garlic-ginger.jpg"
+  },
+  {
+    "name": "Paneer Manchurian",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "paneer-manchurian.jpg"
+  },
+  {
+    "name": "Babycorn Crispy",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "babycorn-crispy.jpg"
+  },
+  {
+    "name": "Babycorn Pepper Salt",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "babycorn-pepper-salt.jpg"
+  },
+  {
+    "name": "Babycorn Dragon",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "babycorn-dragon.jpg"
+  },
+  {
+    "name": "Babycorn Chilly/Garlic/Ginger",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "babycorn-chilly-garlic-ginger.jpg"
+  },
+  {
+    "name": "Babycorn Manchurian",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "babycorn-manchurian.jpg"
+  },
+  {
+    "name": "Mushroom Crispy",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "mushroom-crispy.jpg"
+  },
+  {
+    "name": "Mushroom Pepper Salt",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "mushroom-pepper-salt.jpg"
+  },
+  {
+    "name": "Mushroom Dragon",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "mushroom-dragon.jpg"
+  },
+  {
+    "name": "Mushroom Chilly/Garlic/Ginger",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "mushroom-chilly-garlic-ginger.jpg"
+  },
+  {
+    "name": "Mushroom Manchurian",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "mushroom-manchurian.jpg"
+  },
+  {
+    "name": "Gobi Crispy",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "gobi-crispy.jpg"
+  },
+  {
+    "name": "Gobi Pepper Salt",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "gobi-pepper-salt.jpg"
+  },
+  {
+    "name": "Gobi Dragon",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "gobi-crispy.jpg"
+  },
+  {
+    "name": "Gobi Chilly/Garlic/Ginger",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "gobi-chilly-garlic-ginger.jpg"
+  },
+  {
+    "name": "Gobi Manchurian",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "gobi-manchurian.jpg"
+  },
+  {
+    "name": "Veg Ball Dry",
+    "category": "Starters",
+    "price": 186,
+    "description": "Chinese Starters",
+    "image": "veg-ball-dry.jpg"
+  },
+  {
+    "name": "Potato Crispy",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "potato-crispy.jpg"
+  },
+  {
+    "name": "Potato Pepper Salt",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "potato-pepper-salt.jpg"
+  },
+  {
+    "name": "Potato Dragon",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "potato-dragon.jpg"
+  },
+  {
+    "name": "Potato Chilly/Garlic/Ginger",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "potato-crispy.jpg"
+  },
+  {
+    "name": "Potato Manchurian",
+    "category": "Starters",
+    "price": 239,
+    "description": "Chinese Starters",
+    "image": "potato-manchurian.jpg"
+  },
+  {
+    "name": "Honey Chilli Potato",
+    "category": "Starters",
+    "price": 293,
+    "description": "Chinese Starters",
+    "image": "honey-chilli-potato.jpg"
+  },
+  {
+    "name": "Fried Onion Rings",
+    "category": "Starters",
+    "price": 254,
+    "description": "Chinese Starters",
+    "image": "fried-onion-rings.jpg"
+  },
+  {
+    "name": "American Fried Corn",
+    "category": "Starters",
+    "price": 222,
+    "description": "Chinese Starters",
+    "image": "american-fried-corn.jpg"
+  },
+  {
+    "name": "Paneer Tikka",
+    "category": "Starters",
+    "price": 262,
+    "description": "Grill",
+    "image": "paneer-tikka.jpg"
+  },
+  {
+    "name": "Aloo Tikka",
+    "category": "Starters",
+    "price": 244,
+    "description": "Grill",
+    "image": "aloo-tikka.jpg"
+  },
+  {
+    "name": "Mushroom Tikka",
+    "category": "Starters",
+    "price": 294,
+    "description": "Grill",
+    "image": "mushroom-tikka.jpg"
+  },
+  {
+    "name": "Gobi Tikka",
+    "category": "Starters",
+    "price": 238,
+    "description": "Grill",
+    "image": "gobi-tikka.jpg"
+  },
+  {
+    "name": "Gobi Haryali Tikka",
+    "category": "Starters",
+    "price": 247,
+    "description": "Grill",
+    "image": "gobi-haryali-tikka.jpg"
+  },
+  {
+    "name": "Harabara Tikka",
+    "category": "Starters",
+    "price": 173,
+    "description": "Grill",
+    "image": "harabara-tikka.jpg"
+  },
+  {
+    "name": "Pineapple Tikka",
+    "category": "Starters",
+    "price": 181,
+    "description": "Grill",
+    "image": "pineapple-tikka.jpg"
+  },
+  {
+    "name": "Veg Seekh Kabab",
+    "category": "Starters",
+    "price": 262,
+    "description": "Grill",
+    "image": "veg-seekh-kabab.jpg"
+  },
+  {
+    "name": "Paneer Seekh Kabab",
+    "category": "Starters",
+    "price": 273,
+    "description": "Grill",
+    "image": "paneer-seekh-kabab.jpg"
+  },
+  {
+    "name": "Corn Seekh Kabab",
+    "category": "Starters",
+    "price": 262,
+    "description": "Grill",
+    "image": "corn-seekh-kabab.jpg"
+  },
+  {
+    "name": "Paneer Malai Kebab",
+    "category": "Starters",
+    "price": 271,
+    "description": "Grill",
+    "image": "paneer-malai-kebab.jpg"
+  },
+  {
+    "name": "Afghani Paneer Tikka",
+    "category": "Starters",
+    "price": 277,
+    "description": "Grill",
+    "image": "paneer-malai-kebab.jpg"
+  },
+  {
+    "name": "Achari Paneer Tikka",
+    "category": "Starters",
+    "price": 264,
+    "description": "Grill",
+    "image": "achari-paneer-tikka.jpg"
+  },
+  {
+    "name": "Aloo Mutter Fry",
+    "category": "Main Course",
+    "price": 186,
+    "description": "Dry Sabji",
+    "image": "aloo-mutter-fry.jpg"
+  },
+  {
+    "name": "Aloo Jeera Sukha",
+    "category": "Main Course",
+    "price": 189,
+    "description": "Dry Sabji",
+    "image": "aloo-jeera-sukha.jpg"
+  },
+  {
+    "name": "Bhendi Fry",
+    "category": "Main Course",
+    "price": 185,
+    "description": "Dry Sabji",
+    "image": "bhendi-fry.jpg"
+  },
+  {
+    "name": "Paneer Mutter Fry",
+    "category": "Main Course",
+    "price": 228,
+    "description": "Dry Sabji",
+    "image": "paneer-mutter-fry.jpg"
+  },
+  {
+    "name": "Babycorn Pepper Fry",
+    "category": "Main Course",
+    "price": 246,
+    "description": "Dry Sabji",
+    "image": "babycorn-pepper-fry.jpg"
+  },
+  {
+    "name": "Gobi Capsicum Fry",
+    "category": "Main Course",
+    "price": 197,
+    "description": "Dry Sabji",
+    "image": "gobi-capsicum-fry.jpg"
+  },
+  {
+    "name": "Aloo Gobi Dry",
+    "category": "Main Course",
+    "price": 193,
+    "description": "Dry Sabji",
+    "image": "aloo-gobi-dry.jpg"
+  },
+  {
+    "name": "Veg Spring Roll",
+    "category": "Starters",
+    "price": 146,
+    "description": "Rolls",
+    "image": "veg-spring-roll.jpg"
+  },
+  {
+    "name": "Veg Kaati Roll",
+    "category": "Starters",
+    "price": 133,
+    "description": "Rolls",
+    "image": "veg-kaati-roll.jpg"
+  },
+  {
+    "name": "Matka Biryani",
+    "category": "Main Course",
+    "price": 274,
+    "description": "Biryani",
+    "image": "matka-biryani.jpg"
+  },
+  {
+    "name": "Special Biryani",
+    "category": "Main Course",
+    "price": 252,
+    "description": "Biryani",
+    "image": "special-biryani.jpg"
+  },
+  {
+    "name": "Mushroom Biryani",
+    "category": "Main Course",
+    "price": 245,
+    "description": "Biryani",
+    "image": "mushroom-biryani.jpg"
+  },
+  {
+    "name": "Babycorn Biryani",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Biryani",
+    "image": "babycorn-biryani.jpg"
+  },
+  {
+    "name": "Paneer Biryani",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Biryani",
+    "image": "paneer-biryani.jpg"
+  },
+  {
+    "name": "Gobi Biryani",
+    "category": "Main Course",
+    "price": 201,
+    "description": "Biryani",
+    "image": "gobi-biryani.jpg"
+  },
+  {
+    "name": "Veg Biryani",
+    "category": "Main Course",
+    "price": 193,
+    "description": "Biryani",
+    "image": "veg-biryani.jpg"
+  },
+  {
+    "name": "Steamed Rice",
+    "category": "Main Course",
+    "price": 143,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Ghee Rice",
+    "category": "Main Course",
+    "price": 165,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Jeera Rice",
+    "category": "Main Course",
+    "price": 197,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Veg Pulao",
+    "category": "Main Course",
+    "price": 208,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Kashmiri Pulao",
+    "category": "Main Course",
+    "price": 331,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Paneer Pulao",
+    "category": "Main Course",
+    "price": 298,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Corn and Capsicum Pulao",
+    "category": "Main Course",
+    "price": 228,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Peas Pulao",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Indian Rice",
+    "image": null
+  },
+  {
+    "name": "Veg Fried Rice",
+    "category": "Main Course",
+    "price": 184,
+    "description": "Chinese Rice",
+    "image": "veg-fried-rice.jpg"
+  },
+  {
+    "name": "Chilly Garlic Fried Rice",
+    "category": "Main Course",
+    "price": 204,
+    "description": "Chinese Rice",
+    "image": "chilly-garlic-fried-rice.jpg"
+  },
+  {
+    "name": "Gobi Fried Rice",
+    "category": "Main Course",
+    "price": 195,
+    "description": "Chinese Rice",
+    "image": "gobi-fried-rice.jpg"
+  },
+  {
+    "name": "Paneer Fried Rice",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Chinese Rice",
+    "image": "paneer-fried-rice.jpg"
+  },
+  {
+    "name": "Babycorn Fried Rice",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Chinese Rice",
+    "image": "babycorn-fried-rice.jpg"
+  },
+  {
+    "name": "Mushroom Fried Rice",
+    "category": "Main Course",
+    "price": 245,
+    "description": "Chinese Rice",
+    "image": "mushroom-fried-rice.jpg"
+  },
+  {
+    "name": "Mixed Veg Fried Rice",
+    "category": "Main Course",
+    "price": 249,
+    "description": "Chinese Rice",
+    "image": "mixed-veg-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Fried Rice",
+    "category": "Main Course",
+    "price": 190,
+    "description": "Chinese Rice",
+    "image": "szechuan-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Garlic Fried Rice",
+    "category": "Main Course",
+    "price": 206,
+    "description": "Chinese Rice",
+    "image": "szechuan-garlic-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Babycorn Fried Rice",
+    "category": "Main Course",
+    "price": 235,
+    "description": "Chinese Rice",
+    "image": "szechuan-babycorn-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Mushroom Fried Rice",
+    "category": "Main Course",
+    "price": 247,
+    "description": "Chinese Rice",
+    "image": "szechuan-mushroom-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Paneer Fried Rice",
+    "category": "Main Course",
+    "price": 235,
+    "description": "Chinese Rice",
+    "image": "szechuan-paneer-fried-rice.jpg"
+  },
+  {
+    "name": "Szechuan Mixed Fried Rice",
+    "category": "Main Course",
+    "price": 254,
+    "description": "Chinese Rice",
+    "image": "szechuan-mixed-fried-rice.jpg"
+  },
+  {
+    "name": "Veg Noodles",
+    "category": "Main Course",
+    "price": 184,
+    "description": "Noodles",
+    "image": "veg-noodles.jpg"
+  },
+  {
+    "name": "Chilli Garlic Noodles",
+    "category": "Main Course",
+    "price": 204,
+    "description": "Noodles",
+    "image": "chilli-garlic-noodles.jpg"
+  },
+  {
+    "name": "Szechuan Noodles",
+    "category": "Main Course",
+    "price": 190,
+    "description": "Noodles",
+    "image": "szechuan-noodles.jpg"
+  },
+  {
+    "name": "Plain Naan",
+    "category": "Breads",
+    "price": 82,
+    "description": "Naan & Roti",
+    "image": "plain-naan.jpg"
+  },
+  {
+    "name": "Butter Naan",
+    "category": "Breads",
+    "price": 62,
+    "description": "Naan & Roti",
+    "image": "butter-naan.jpg"
+  },
+  {
+    "name": "Cheese Naan",
+    "category": "Breads",
+    "price": 72,
+    "description": "Naan & Roti",
+    "image": "cheese-naan.jpg"
+  },
+  {
+    "name": "Garlic Naan",
+    "category": "Breads",
+    "price": 69,
+    "description": "Naan & Roti",
+    "image": "garlic-naan.jpg"
+  },
+  {
+    "name": "Paneer Naan",
+    "category": "Breads",
+    "price": 85,
+    "description": "Naan & Roti",
+    "image": "paneer-naan.jpg"
+  },
+  {
+    "name": "Kashmiri Naan",
+    "category": "Breads",
+    "price": 150,
+    "description": "Naan & Roti",
+    "image": "kashmiri-naan.jpg"
+  },
+  {
+    "name": "Chilli Cheese Naan",
+    "category": "Breads",
+    "price": 76,
+    "description": "Naan & Roti",
+    "image": "chilli-cheese-naan.jpg"
+  },
+  {
+    "name": "Cheese Garlic Naan",
+    "category": "Breads",
+    "price": 76,
+    "description": "Naan & Roti",
+    "image": "cheese-garlic-naan.jpg"
+  },
+  {
+    "name": "Chilly Mint Garlic Naan",
+    "category": "Breads",
+    "price": 87,
+    "description": "Naan & Roti",
+    "image": "chilly-mint-garlic-naan.jpg"
+  },
+  {
+    "name": "Kulcha",
+    "category": "Breads",
+    "price": 61,
+    "description": "Naan & Roti",
+    "image": "kulcha.jpg"
+  },
+  {
+    "name": "Stuffed Kulcha",
+    "category": "Breads",
+    "price": 72,
+    "description": "Naan & Roti",
+    "image": "stuffed-kulcha.jpg"
+  },
+  {
+    "name": "Onion Kulcha",
+    "category": "Breads",
+    "price": 77,
+    "description": "Naan & Roti",
+    "image": "onion-kulcha.jpg"
+  },
+  {
+    "name": "Phulka (2 Nos. Served)",
+    "category": "Breads",
+    "price": 46,
+    "description": "Naan & Roti",
+    "image": "phulka-2-nos-served.jpg"
+  },
+  {
+    "name": "Ghee Phulka (2 Nos. Served)",
+    "category": "Breads",
+    "price": 55,
+    "description": "Naan & Roti",
+    "image": "ghee-phulka-2-nos-served.jpg"
+  },
+  {
+    "name": "Butter Phulka (2 Nos. Served)",
+    "category": "Breads",
+    "price": 57,
+    "description": "Naan & Roti",
+    "image": "butter-phulka-2-nos-served.jpg"
+  },
+  {
+    "name": "Plain Roti",
+    "category": "Breads",
+    "price": 65,
+    "description": "Naan & Roti",
+    "image": "plain-roti.jpg"
+  },
+  {
+    "name": "Butter Roti",
+    "category": "Breads",
+    "price": 72,
+    "description": "Naan & Roti",
+    "image": "butter-roti.jpg"
+  },
+  {
+    "name": "Rumali Roti",
+    "category": "Breads",
+    "price": 72,
+    "description": "Naan & Roti",
+    "image": "rumali-roti.jpg"
+  },
+  {
+    "name": "Tandoori Paratha",
+    "category": "Breads",
+    "price": 89,
+    "description": "Paratha",
+    "image": "tandoori-paratha.jpg"
+  },
+  {
+    "name": "Lachcha Paratha",
+    "category": "Breads",
+    "price": 89,
+    "description": "Paratha",
+    "image": "lachcha-paratha.jpg"
+  },
+  {
+    "name": "Aloo Paratha",
+    "category": "Breads",
+    "price": 122,
+    "description": "Paratha",
+    "image": "aloo-paratha.jpg"
+  },
+  {
+    "name": "Gobi Paratha",
+    "category": "Breads",
+    "price": 122,
+    "description": "Paratha",
+    "image": "gobi-paratha.jpg"
+  },
+  {
+    "name": "Plain Paratha",
+    "category": "Breads",
+    "price": 128,
+    "description": "Paratha",
+    "image": "plain-paratha.jpg"
+  },
+  {
+    "name": "Paneer Paratha",
+    "category": "Breads",
+    "price": 137,
+    "description": "Paratha",
+    "image": "paneer-paratha.jpg"
+  },
+  {
+    "name": "Cheese Paratha",
+    "category": "Breads",
+    "price": 137,
+    "description": "Paratha",
+    "image": "cheese-paratha.jpg"
+  },
+  {
+    "name": "Mix Veg Masala",
+    "category": "Main Course",
+    "price": 209,
+    "description": "Indian Gravy",
+    "image": "mix-veg-masala.jpg"
+  },
+  {
+    "name": "Green Peas Masala",
+    "category": "Main Course",
+    "price": 209,
+    "description": "Indian Gravy",
+    "image": "green-peas-masala.jpg"
+  },
+  {
+    "name": "Rajma Masala",
+    "category": "Main Course",
+    "price": 224,
+    "description": "Indian Gravy",
+    "image": "rajma-masala.jpg"
+  },
+  {
+    "name": "Aloo Mutter Masala",
+    "category": "Main Course",
+    "price": 209,
+    "description": "Indian Gravy",
+    "image": "aloo-mutter-masala.jpg"
+  },
+  {
+    "name": "Gobi Masala",
+    "category": "Main Course",
+    "price": 209,
+    "description": "Indian Gravy",
+    "image": "gobi-masala.jpg"
+  },
+  {
+    "name": "Mushroom Mutter Masala",
+    "category": "Main Course",
+    "price": 258,
+    "description": "Indian Gravy",
+    "image": "mushroom-mutter-masala.jpg"
+  },
+  {
+    "name": "Chole Masala",
+    "category": "Main Course",
+    "price": 236,
+    "description": "Indian Gravy",
+    "image": "chole-masala.jpg"
+  },
+  {
+    "name": "Kaju Masala",
+    "category": "Main Course",
+    "price": 282,
+    "description": "Indian Gravy",
+    "image": "kaju-masala.jpg"
+  },
+  {
+    "name": "Veg Makhanwala",
+    "category": "Main Course",
+    "price": 208,
+    "description": "Indian Gravy",
+    "image": "veg-makhanwala.jpg"
+  },
+  {
+    "name": "Stuffed Capsicum",
+    "category": "Main Course",
+    "price": 208,
+    "description": "Indian Gravy",
+    "image": "stuffed-capsicum.jpg"
+  },
+  {
+    "name": "Bhendi Masala",
+    "category": "Main Course",
+    "price": 190,
+    "description": "Indian Gravy",
+    "image": "bhendi-masala.jpg"
+  },
+  {
+    "name": "Kadai Veg",
+    "category": "Main Course",
+    "price": 208,
+    "description": "Indian Gravy",
+    "image": "kadai-veg.jpg"
+  },
+  {
+    "name": "Paneer Masala",
+    "category": "Main Course",
+    "price": 244,
+    "description": "Paneer Gravy",
+    "image": "paneer-masala.jpg"
+  },
+  {
+    "name": "Paneer Butter Masala",
+    "category": "Main Course",
+    "price": 263,
+    "description": "Paneer Gravy",
+    "image": "paneer-butter-masala.jpg"
+  },
+  {
+    "name": "Paneer Masaledar",
+    "category": "Main Course",
+    "price": 241,
+    "description": "Paneer Gravy",
+    "image": "paneer-masaledar.jpg"
+  },
+  {
+    "name": "Paneer Pasanda (White Gravy)",
+    "category": "Main Course",
+    "price": 258,
+    "description": "Paneer Gravy",
+    "image": "paneer-pasanda-white-gravy.jpg"
+  },
+  {
+    "name": "Shahi Paneer (White Gravy)",
+    "category": "Main Course",
+    "price": 241,
+    "description": "Paneer Gravy",
+    "image": "shahi-paneer-white-gravy.jpg"
+  },
+  {
+    "name": "Lasooni Methi Paneer",
+    "category": "Main Course",
+    "price": 224,
+    "description": "Paneer Gravy",
+    "image": "lasooni-methi-paneer.jpg"
+  },
+  {
+    "name": "Kadai Paneer",
+    "category": "Main Course",
+    "price": 241,
+    "description": "Paneer Gravy",
+    "image": "kadai-paneer.jpg"
+  },
+  {
+    "name": "Palak Paneer",
+    "category": "Main Course",
+    "price": 225,
+    "description": "Paneer Gravy",
+    "image": "palak-paneer.jpg"
+  },
+  {
+    "name": "Dal Fry (Yellow Dal)",
+    "category": "Main Course",
+    "price": 209,
+    "description": "Dal",
+    "image": "dal-fry-yellow-dal.jpg"
+  },
+  {
+    "name": "Dal Tadka (Yellow Dal)",
+    "category": "Main Course",
+    "price": 225,
+    "description": "Dal",
+    "image": "dal-tadka-yellow-dal.jpg"
+  },
+  {
+    "name": "Dal Makhani",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Dal",
+    "image": "dal-makhani.jpg"
+  },
+  {
+    "name": "Veg Kofta",
+    "category": "Main Course",
+    "price": 211,
+    "description": "Kofta",
+    "image": "veg-kofta.jpg"
+  },
+  {
+    "name": "Malai Kofta",
+    "category": "Main Course",
+    "price": 254,
+    "description": "Kofta",
+    "image": "malai-kofta.jpg"
+  },
+  {
+    "name": "Mushroom Tikka Masala",
+    "category": "Main Course",
+    "price": 227,
+    "description": "Tandoori Gravy",
+    "image": "mushroom-tikka-masala.jpg"
+  },
+  {
+    "name": "Paneer Tikka Masala",
+    "category": "Main Course",
+    "price": 214,
+    "description": "Tandoori Gravy",
+    "image": "paneer-tikka-masala.jpg"
+  },
+  {
+    "name": "Aloo Tikka Masala",
+    "category": "Main Course",
+    "price": 204,
+    "description": "Tandoori Gravy",
+    "image": "aloo-tikka-masala.jpg"
+  },
+  {
+    "name": "Gobi Tikka Masala",
+    "category": "Main Course",
+    "price": 214,
+    "description": "Tandoori Gravy",
+    "image": "gobi-tikka-masala.jpg"
+  },
+  {
+    "name": "Tawa Paneer",
+    "category": "Main Course",
+    "price": 214,
+    "description": "Tandoori Gravy",
+    "image": "tawa-paneer.jpg"
+  },
+  {
+    "name": "Paneer (Chinese Gravy)",
+    "category": "Main Course",
+    "price": 225,
+    "description": "Chinese Gravy",
+    "image": "paneer-chinese-gravy.jpg"
+  },
+  {
+    "name": "Mushroom (Chinese Gravy)",
+    "category": "Main Course",
+    "price": 236,
+    "description": "Chinese Gravy",
+    "image": "mushroom-chinese-gravy.jpg"
+  },
+  {
+    "name": "Babycorn (Chinese Gravy)",
+    "category": "Main Course",
+    "price": 225,
+    "description": "Chinese Gravy",
+    "image": "babycorn-chinese-gravy.jpg"
+  },
+  {
+    "name": "Veg Ball (Chinese Gravy)",
+    "category": "Main Course",
+    "price": 212,
+    "description": "Chinese Gravy",
+    "image": "veg-ball-chinese-gravy.jpg"
+  },
+  {
+    "name": "Maharaja Thali (Limited)",
+    "category": "Main Course",
+    "price": 260,
+    "description": "Thali",
+    "image": "maharaja-thali-limited.jpg"
+  },
+  {
+    "name": "Spl Maharaja Thali (Limited)",
+    "category": "Main Course",
+    "price": 301,
+    "description": "Thali",
+    "image": "maharaja-thali-limited.jpg"
+  },
+  {
+    "name": "Tandoor Thali (Limited)",
+    "category": "Main Course",
+    "price": 279,
+    "description": "Thali",
+    "image": "tandoor-thali-limited.jpg"
+  },
+  {
+    "name": "Jain Thali (Limited)",
+    "category": "Main Course",
+    "price": 279,
+    "description": "Thali",
+    "image": null
+  },
+  {
+    "name": "Chole and Kulcha",
+    "category": "Main Course",
+    "price": 199,
+    "description": "Combo",
+    "image": "chole-and-kulcha.jpg"
+  },
+  {
+    "name": "Malai Kofta Combo",
+    "category": "Main Course",
+    "price": 201,
+    "description": "Combo",
+    "image": "malai-kofta.jpg"
+  },
+  {
+    "name": "Nutty Mania",
+    "category": "Desserts",
+    "price": 179,
+    "description": "Ice Cream Sundae",
+    "image": "nutty-mania.jpg"
+  },
+  {
+    "name": "Blind Love",
+    "category": "Desserts",
+    "price": 146,
+    "description": "Ice Cream Sundae",
+    "image": "blind-love.jpg"
+  },
+  {
+    "name": "Vanilla Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "vanilla-milkshake.jpg"
+  },
+  {
+    "name": "Strawberry Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "strawberry-milkshake.jpg"
+  },
+  {
+    "name": "Chocolate Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "chocolate-milkshake.jpg"
+  },
+  {
+    "name": "Butterscotch Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "butterscotch-milkshake.jpg"
+  },
+  {
+    "name": "Mango Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "mango-milkshake.jpg"
+  },
+  {
+    "name": "Kesar Badam Milkshake",
+    "category": "Beverages",
+    "price": 136,
+    "description": "Milkshake",
+    "image": "kesar-badam-milkshake.jpg"
+  },
+  {
+    "name": "Oreo Milkshake",
+    "category": "Beverages",
+    "price": 147,
+    "description": "Milkshake",
+    "image": "oreo-milkshake.jpg"
+  },
+  {
+    "name": "Rosemilk",
+    "category": "Beverages",
+    "price": 76,
+    "description": "Beverages",
+    "image": "rosemilk.jpg"
+  },
+  {
+    "name": "Blue Curacao",
+    "category": "Beverages",
+    "price": 76,
+    "description": "Beverages",
+    "image": "blue-curacao.jpg"
+  },
+  {
+    "name": "Mint Cooler",
+    "category": "Beverages",
+    "price": 76,
+    "description": "Beverages",
+    "image": "mint-cooler.jpg"
+  },
+  {
+    "name": "Lemon Juice",
+    "category": "Beverages",
+    "price": 67,
+    "description": "Beverages",
+    "image": "lemon-juice.jpg"
+  },
+  {
+    "name": "Lemon Sharbat",
+    "category": "Beverages",
+    "price": 67,
+    "description": "Beverages",
+    "image": "lemon-sharbat.jpg"
+  },
+  {
+    "name": "Awesome Lassi",
+    "category": "Beverages",
+    "price": 86,
+    "description": "Beverages",
+    "image": "awesome-lassi.jpg"
+  },
+  {
+    "name": "Mango Lassi",
+    "category": "Beverages",
+    "price": 76,
+    "description": "Beverages",
+    "image": "mango-lassi.jpg"
+  },
+  {
+    "name": "Salt Lassi",
+    "category": "Beverages",
+    "price": 66,
+    "description": "Beverages",
+    "image": "salt-lassi.jpg"
+  },
+  {
+    "name": "Chaach",
+    "category": "Beverages",
+    "price": 56,
+    "description": "Beverages",
+    "image": "chaach.jpg"
+  },
+  {
+    "name": "Masala Chaach",
+    "category": "Beverages",
+    "price": 59,
+    "description": "Beverages",
+    "image": "masala-chaach.jpg"
+  },
+  {
+    "name": "Jal Jeera",
+    "category": "Beverages",
+    "price": 42,
+    "description": "Beverages",
+    "image": "jal-jeera.jpg"
+  },
+  {
+    "name": "Water Bottle (1 Litre)",
+    "category": "Beverages",
+    "price": 20,
+    "description": "Beverages",
+    "image": "water-bottle-1-litre.jpg"
+  },
+  {
+    "name": "Water Bottle (Small)",
+    "category": "Beverages",
+    "price": 12,
+    "description": "Beverages",
+    "image": "water-bottle-small.jpg"
+  }
+]

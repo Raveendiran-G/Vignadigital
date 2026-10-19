@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>New Desi Tadka</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <style>
+        :root {
+            --brown: #5a2d22;
+            --orange: #e8761f;
+            --cream: #f7f3ee;
+            --border: #e5ddd5;
+            --text: #241d19;
+            --muted: #756b64;
+            --red: #c9362b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .login-box {
+            text-align: center;
+        }
+
+        .admin-logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+            overflow: hidden;
+
+            border: 3px solid #f07818;
+            background: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .admin-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .login-box h1 {
+            margin: 0;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .google-button-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                system-ui,
+                -apple-system,
+                "Segoe UI",
+                Roboto,
+                sans-serif;
+
+            background: var(--cream);
+            color: var(--text);
+        }
+
+        /* =========================
+         LOGIN
+        ========================= */
+
+        .login-page {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .login-box {
+
+            width: min(420px, 100%);
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 15px 50px #0002;
+        }
+
+        .login-logo {
+
+            text-align: center;
+
+            margin-bottom: 25px;
+        }
+
+        .login-logo h1 {
+
+            margin: 0;
+
+            color: var(--brown);
+
+            font-size: 28px;
+        }
+
+        .login-logo p {
+
+            margin-top: 6px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            letter-spacing: 2px;
+        }
+
+        .login-field {
+
+            margin-bottom: 16px;
+        }
+
+        .login-field label {
+
+            display: block;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            border:
+                1.5px solid var(--border);
+
+            border-radius: 9px;
+
+            padding: 11px 12px;
+
+            font: inherit;
+
+            outline: none;
+
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color:
+                var(--orange);
+        }
+
+        .login-button {
+
+            width: 100%;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            padding: 12px;
+
+            background: var(--orange);
+
+            color: white;
+
+            font-weight: 700;
+
+            font-size: 15px;
+
+            cursor: pointer;
+        }
+
+        .login-error {
+
+            color: var(--red);
+
+            font-size: 13px;
+
+            margin-top: 12px;
+
+            text-align: center;
+
+            display: none;
+        }
+
+        /* =========================
+   ADMIN DASHBOARD
+========================= */
+
+        #dashboard {
+
+            display: none;
+        }
+
+        header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 20;
+
+            background: var(--brown);
+
+            color: white;
+
+            padding: 14px 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 14px;
+
+            box-shadow:
+                0 2px 10px #0002;
+        }
+
+        .brand b {
+
+            display: block;
+
+            font-size: 20px;
+        }
+
+        .brand small {
+
+            color: #f6b94c;
+
+            letter-spacing: 2px;
+        }
+
+        .actions {
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+        }
+
+        button {
+
+            border: 0;
+
+            border-radius: 9px;
+
+            padding: 10px 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+        .primary {
+
+            background: var(--orange);
+
+            color: white;
+        }
+
+        .light {
+
+            background: white;
+
+            color: var(--brown);
+        }
+
+        .danger {
+
+            background: #fee9e7;
+
+            color: var(--red);
+        }
+
+        .ghost {
+
+            background: #ffffff20;
+
+            color: white;
+        }
+
+        .logout {
+
+            background: #ffffff20;
+
+            color: white;
+        }
+
+        main {
+
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding:
+                20px 16px 50px;
+        }
+
+        .top {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 14px;
+        }
+
+        .top h1 {
+
+            margin: 0;
+
+            font-size: 24px;
+        }
+
+        .count {
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+        .toolbar {
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 12px;
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 190px auto;
+
+            gap: 10px;
+
+            margin-bottom: 16px;
+        }
+
+        .table-wrap {
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: auto;
+        }
+
+        .table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 760px;
+        }
+
+        .table th,
+        .table td {
+
+            padding: 12px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            text-align: left;
+
+            vertical-align: middle;
+        }
+
+        .table th {
+
+            background: #fbf8f5;
+
+            font-size: 13px;
+
+            color: var(--muted);
+        }
+
+        .name {
+
+            font-weight: 700;
+        }
+
+        .sub {
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-top: 3px;
+        }
+
+        .price {
+
+            font-weight: 800;
+
+            color: var(--brown);
+        }
+
+        .row-actions {
+
+            display: flex;
+
+            gap: 7px;
+        }
+
+        .empty {
+
+            text-align: center;
+
+            padding: 40px;
+
+            color: var(--muted);
+        }
+
+        /* =========================
+   MODAL
+========================= */
+
+        .overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background: #0008;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 16px;
+
+            z-index: 50;
+        }
+
+        .overlay.show {
+
+            display: flex;
+        }
+
+        .modal {
+
+            background: white;
+
+            width: min(620px, 100%);
+
+            max-height: 92vh;
+
+            overflow: auto;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 20px 60px #0005;
+        }
+
+        .modal h2 {
+
+            margin:
+                0 0 16px;
+        }
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 12px;
+        }
+
+        .field.full {
+
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+        textarea {
+
+            min-height: 90px;
+
+            resize: vertical;
+        }
+
+        .modal-actions {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 8px;
+
+            margin-top: 18px;
+        }
+
+        .error {
+
+            color: var(--red);
+
+            font-size: 13px;
+
+            margin-top: 10px;
+
+            display: none;
+        }
+
+        .toast {
+
+            position: fixed;
+
+            right: 18px;
+
+            bottom: 18px;
+
+            background: var(--brown);
+
+            color: white;
+
+            padding: 12px 16px;
+
+            border-radius: 10px;
+
+            display: none;
+
+            z-index: 100;
+        }
+
+        .toast.show {
+
+            display: block;
+        }
+
+        @media(max-width:700px) {
+
+            header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            .toolbar {
+
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+
+                grid-column: auto;
+            }
+        }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer>
+    </script>
+
+</head>
+
+<body>
+
+    <!-- =========================
+     LOGIN PAGE
+========================= -->
+
+    <div class="login-page" id="loginPage">
+
+        <div class="login-box">
+
+            <!-- 1. LOGO -->
+            <div class="admin-logo">
+                <img src="/images/logo.png" alt="New Desi Tadka Logo">
+            </div>
+
+            <!-- 2. TITLE -->
+            <h1>New Desi Tadka</h1>
+
+            <!-- 3. ADMIN PANEL -->
+            <div class="subtitle">
+                ADMIN PANEL
+            </div>
+
+            <!-- 4. GOOGLE LOGIN -->
+            <div id="googleButton" class="google-button-container">
+            </div>
+
+            <div class="login-error" id="loginError">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+     DASHBOARD
+========================= -->
+
+    <div id="dashboard">
+
+        <header>
+
+            <div class="brand">
+
+                <b>
+                    New Desi Tadka — Admin
+                </b>
+
+                <small>
+                    MENU MANAGEMENT
+                </small>
+
+            </div>
+
+            <div class="actions">
+
+                <button class="ghost" onclick="window.location.href='/'">
+                    View Website
+                </button>
+
+                <button class="primary" onclick="openAdd()">
+                    + Add Item
+                </button>
+
+                <button class="logout" onclick="logout()">
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <main>
+
+            <div class="top">
+
+                <div>
+
+                    <h1>
+                        Menu Items
+                    </h1>
+
+                    <div class="count" id="count">
+                        Loading…
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="toolbar">
+
+                <input id="search" placeholder="Search item, category or description..." oninput="render()">
+
+                <select id="category" onchange="render()">
+
+                    <option value="">
+                        All categories
+                    </option>
+
+                </select>
+
+                <button class="light" onclick="loadMenu()">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Item
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="rows">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================
+     ADD / EDIT MODAL
+========================= -->
+
+    <div class="overlay" id="overlay">
+
+        <div class="modal">
+
+            <h2 id="modalTitle">
+                Add Menu Item
+            </h2>
+
+            <form id="itemForm">
+
+                <div class="form-grid">
+
+                    <div class="field full">
+
+                        <label>
+                            Item name *
+                        </label>
+
+                        <input id="name" required>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Category *
+                        </label>
+
+                        <input id="cat" list="catList" required>
+
+                        <datalist id="catList">
+                        </datalist>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Price (₹) *
+                        </label>
+
+                        <input id="price" type="number" min="0" step="1" required>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea id="desc" placeholder="Example: Indian Starters"></textarea>
+
+                    </div>
+
+
+                    <div class="field full">
+                        <label>Image</label>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="file" id="imageFile" accept="image/*">
+
+                            <input type="url" id="imageUrl" placeholder="Or paste image URL"
+                                style="flex:1; min-width:250px;">
+                        </div>
+
+                        <img id="imagePreview" style="
+            display:none;
+            width:150px;
+            height:100px;
+            object-fit:cover;
+            margin-top:10px;
+            border-radius:10px;
+        ">
+                    </div>
+
+                </div>
+
+
+                <div class="error" id="formError"></div>
+
+
+                <div class="modal-actions">
+
+                    <button type="button" class="light" onclick="closeModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary" id="saveBtn">
+                        Add Item
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div class="toast" id="toast"></div>
+
+
+    <script>
+
+        let menu = [];
+        let editingId = null;
+
+
+        // =========================
+        // SHORTCUT
+        // =========================
+
+        const $ = id => document.getElementById(id);
+
+
+        // =========================
+        // IMAGE FILE PREVIEW
+        // =========================
+
+        $("imageFile").addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            // If user selects a file,
+            // clear the URL field
+            $("imageUrl").value = "";
+
+            const preview = $("imagePreview");
+
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+
+        });
+
+
+        // =========================
+        // IMAGE URL PREVIEW
+        // =========================
+
+        $("imageUrl").addEventListener("input", function () {
+
+            const url = this.value.trim();
+            const preview = $("imagePreview");
+
+            // If URL is empty
+            if (!url) {
+
+                preview.src = "";
+                preview.style.display = "none";
+
+                return;
+            }
+
+            // Show URL preview
+            preview.src = url;
+            preview.style.display = "block";
+
+            // Invalid image URL
+            preview.onerror = function () {
+
+                preview.style.display = "none";
+
+            };
+
+        });
+
+
+        // =========================
+        // ESCAPE HTML
+        // =========================
+
+        function esc(value) {
+
+            return String(value ?? "")
+                .replace(
+                    /[&<>'"]/g,
+                    character => ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        "'": "&#39;",
+                        '"': "&quot;"
+                    }[character])
+                );
+
+        }
+
+
+        // =========================
+        // MONEY
+        // =========================
+
+        function money(value) {
+
+            return "₹" +
+                Number(value || 0)
+                    .toLocaleString("en-IN");
+
+        }
+
+
+        // =========================
+        // CHECK LOGIN
+        // =========================
+
+        async function checkLogin() {
+
+            try {
+
+                const response =
+                    await fetch("/api/admin/check");
+
+                const data =
+                    await response.json();
+
+                if (data.loggedIn) {
+
+                    showDashboard();
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        }
+
+
+
+
+        // ========================================
+        // GOOGLE LOGIN
+        // ========================================
+
+        function handleGoogleLogin(response) {
+
+            fetch(
+                "/api/admin/google-login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        credential:
+                            response.credential
+                    })
+                }
+            )
+                .then(
+                    async response => {
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                data.message ||
+                                "Google login failed"
+                            );
+
+                        }
+
+
+                        $("loginError")
+                            .style.display =
+                            "none";
+
+
+                        showDashboard();
+
+                    }
+                )
+                .catch(
+                    error => {
+
+                        console.error(
+                            "Google login error:",
+                            error
+                        );
+
+
+                        $("loginError")
+                            .style.display =
+                            "block";
+
+
+                        $("loginError")
+                            .textContent =
+                            error.message;
+
+                    }
+                );
+
+        }
+
+
+        // ========================================
+        // INITIALIZE GOOGLE BUTTON
+        // ========================================
+
+        function initializeGoogleLogin() {
+
+            if (
+                typeof google === "undefined" ||
+                !google.accounts
+            ) {
+
+                console.error(
+                    "Google Sign-In library has not loaded."
+                );
+
+                return;
+
+            }
+
+
+            google.accounts.id.initialize({
+
+                client_id:
+                    "132884412252-jokiu99i47enkg2ciugap6lqpgfk7vnk.apps.googleusercontent.com",
+
+                callback:
+                    handleGoogleLogin
+
+            });
+
+
+            google.accounts.id.renderButton(
+
+                $("googleButton"),
+
+                {
+                    theme:
+                        "outline",
+
+                    size:
+                        "large",
+
+                    text:
+                        "signin_with",
+
+                    shape:
+                        "rectangular",
+
+                    width:
+                        350
+                }
+
+            );
+
+        }
+
+
+        // ========================================
+        // START
+        // ========================================
+
+        window.addEventListener(
+            "load",
+            initializeGoogleLogin
+        );
+
+
+
+
+        // =========================
+        // SHOW DASHBOARD
+        // =========================
+
+        function showDashboard() {
+
+            $("loginPage")
+                .style.display = "none";
+
+            $("dashboard")
+                .style.display = "block";
+
+            loadMenu();
+
+        }
+
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        async function logout() {
+
+            await fetch(
+                "/api/admin/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+            location.reload();
+
+        }
+
+
+        // =========================
+        // LOAD MENU
+        // =========================
+
+        async function loadMenu() {
+
+            try {
+
+                const response =
+                    await fetch("/api/menu");
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Could not load menu"
+                    );
+
+                }
+
+                menu =
+                    await response.json();
+
+                fillCategories();
+
+                render();
+
+            } catch (error) {
+
+                showToast(
+                    "Could not load menu"
+                );
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        // =========================
+        // CATEGORY LIST
+        // =========================
+
+        function fillCategories() {
+
+            const categories = [
+                ...new Set(
+                    menu
+                        .map(item => item.category)
+                        .filter(Boolean)
+                )
+            ].sort(
+                (a, b) =>
+                    a.localeCompare(b)
+            );
+
+            const selected =
+                $("category").value;
+
+            $("category").innerHTML =
+                `<option value="">
+                All categories
+            </option>` +
+
+                categories
+                    .map(
+                        category =>
+                            `<option value="${esc(category)}">
+                            ${esc(category)}
+                        </option>`
+                    )
+                    .join("");
+
+            $("category").value =
+                selected;
+
+
+            $("catList").innerHTML =
+                categories
+                    .map(
+                        category =>
+                            `<option value="${esc(category)}">`
+                    )
+                    .join("");
+
+        }
+
+
+        // =========================
+        // RENDER
+        // =========================
+
+        function render() {
+
+            const search =
+                $("search")
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+            const category =
+                $("category").value;
+
+
+            const filtered =
+                menu.filter(item => {
+
+                    const matchesCategory =
+                        !category ||
+                        item.category === category;
+
+                    const matchesSearch =
+                        !search ||
+                        [
+                            item.name,
+                            item.category,
+                            item.description
+                        ]
+                            .some(
+                                value =>
+                                    String(value || "")
+                                        .toLowerCase()
+                                        .includes(search)
+                            );
+
+                    return (
+                        matchesCategory &&
+                        matchesSearch
+                    );
+
+                });
+
+
+            $("count").textContent =
+                `Showing ${filtered.length} of ${menu.length} items`;
+
+
+            $("rows").innerHTML =
+                filtered.length
+
+                    ?
+
+                    filtered
+                        .map(
+                            item => `
+                    <tr>
+
+                        <td>
+
+                            <div class="name">
+                                ${esc(item.name)}
+                            </div>
+
+                            <div class="sub">
+                                ID:
+                                ${esc(item.id)}
+                            </div>
+
+                        </td>
+
+                        <td>
+                            ${esc(item.category)}
+                        </td>
+
+                        <td class="price">
+                            ${money(item.price)}
+                        </td>
+
+                        <td>
+                            ${esc(
+                                item.description || "—"
+                            )}
+                        </td>
+
+                        <td>
+
+                            <div class="row-actions">
+
+                                <button
+                                    class="light"
+                                    onclick="openEdit('${esc(item.id)}')"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    class="danger"
+                                    onclick="removeItem('${esc(item.id)}')"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `
+                        )
+                        .join("")
+
+                    :
+
+                    `
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty">
+                                No menu items found.
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `;
+
+        }
+
+
+        // =========================
+        // ADD
+        // =========================
+
+        function openAdd() {
+
+            editingId = null;
+
+            $("modalTitle").textContent =
+                "Add Menu Item";
+
+            $("saveBtn").textContent =
+                "Add Item";
+
+            $("itemForm").reset();
+
+
+            // Clear image preview
+            $("imagePreview").src = "";
+            $("imagePreview").style.display = "none";
+
+
+            // Clear image URL
+            $("imageUrl").value = "";
+
+
+            $("formError").style.display =
+                "none";
+
+            $("overlay")
+                .classList
+                .add("show");
+
+            $("name").focus();
+
+        }
+
+
+        // =========================
+        // EDIT
+        // =========================
+
+        function openEdit(id) {
+
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
+                );
+
+            if (!item) return;
+
+
+            editingId = id;
+
+
+            $("modalTitle")
+                .textContent =
+                "Edit Menu Item";
+
+
+            $("saveBtn")
+                .textContent =
+                "Save Changes";
+
+
+            $("name").value =
+                item.name || "";
+
+            $("cat").value =
+                item.category || "";
+
+            $("price").value =
+                item.price ?? "";
+
+            $("desc").value =
+                item.description || "";
+
+
+            // Reset file selector
+            $("imageFile").value = "";
+
+
+            // Put existing URL into URL field
+            $("imageUrl").value =
+                item.image || "";
+
+
+            // Show existing image
+            if (item.image) {
+
+                $("imagePreview").src =
+                    item.image;
+
+                $("imagePreview").style.display =
+                    "block";
+
+            } else {
+
+                $("imagePreview").src = "";
+
+                $("imagePreview").style.display =
+                    "none";
+
+            }
+
+
+            $("formError")
+                .style.display =
+                "none";
+
+
+            $("overlay")
+                .classList
+                .add("show");
+
+
+            $("name").focus();
+
+        }
+
+
+        // =========================
+        // CLOSE MODAL
+        // =========================
+
+        function closeModal() {
+
+            $("overlay")
+                .classList
+                .remove("show");
+
+        }
+
+
+        // =========================
+        // CLOSE WHEN CLICKING OUTSIDE
+        // =========================
+
+        $("overlay")
+            .addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target.id ===
+                        "overlay"
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+
+        // =========================
+        // ADD / EDIT SUBMIT
+        // =========================
+        $("itemForm").addEventListener("submit", async event => {
+
+            event.preventDefault();
+
+            const file = $("imageFile").files[0];
+            const pastedImageUrl = $("imageUrl").value.trim();
+
+            const name = $("name").value.trim();
+            const category = $("cat").value.trim();
+            const price = Number($("price").value);
+            const description = $("desc").value.trim();
+
+            if (!name || !category || Number.isNaN(price)) {
+                showError("Name, category and valid price are required.");
+                return;
+            }
+
+            $("saveBtn").disabled = true;
+            $("saveBtn").textContent = "Saving...";
+
+            try {
+
+                let imageUrl = null;
+
+                // 1. FILE UPLOAD
+                if (file) {
+
+                    $("saveBtn").textContent = "Uploading image...";
+
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const uploadResponse = await fetch("/api/upload-image", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const uploadData = await uploadResponse.json();
+
+                    if (!uploadResponse.ok) {
+                        throw new Error(
+                            uploadData.message || "Image upload failed"
+                        );
+                    }
+
+                    imageUrl = uploadData.imageUrl;
+
+                }
+
+                // 2. PASTED IMAGE URL
+                else if (pastedImageUrl) {
+
+                    imageUrl = pastedImageUrl;
+
+                }
+
+                // 3. KEEP EXISTING IMAGE WHEN EDITING
+                else if (editingId) {
+
+                    const existingItem = menu.find(
+                        item => String(item.id) === String(editingId)
+                    );
+
+                    imageUrl = existingItem?.image || null;
+                }
+
+                const payload = {
+                    name,
+                    category,
+                    price,
+                    description,
+                    image: imageUrl
+                };
+
+                const url = editingId
+                    ? `/api/menu/${encodeURIComponent(editingId)}`
+                    : "/api/menu";
+
+                const response = await fetch(url, {
+                    method: editingId ? "PUT" : "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Request failed"
+                    );
+                }
+
+                closeModal();
+
+                await loadMenu();
+
+                showToast(
+                    editingId
+                        ? "Item updated successfully"
+                        : "Item added successfully"
+                );
+
+            } catch (error) {
+
+                console.error(error);
+                showError(error.message);
+
+            } finally {
+
+                $("saveBtn").disabled = false;
+
+                $("saveBtn").textContent =
+                    editingId
+                        ? "Save Changes"
+                        : "Add Item";
+            }
+
+        });
+        // =========================
+        // DELETE
+        // =========================
+
+        async function removeItem(id) {
+
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
+                );
+
+
+            if (!item) return;
+
+
+            const confirmed =
+                confirm(
+                    `Delete "${item.name}"?\n\nThis cannot be undone.`
+                );
+
+
+            if (!confirmed) return;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/menu/${encodeURIComponent(id)}`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Delete failed"
+                    );
+
+                }
+
+
+                await loadMenu();
+
+
+                showToast(
+                    "Item deleted successfully"
+                );
+
+
+            } catch (error) {
+
+                showToast(
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // =========================
+        // ERROR
+        // =========================
+
+        function showError(message) {
+
+            $("formError")
+                .textContent =
+                message;
+
+            $("formError")
+                .style.display =
+                "block";
+
+        }
+
+
+        // =========================
+        // TOAST
+        // =========================
+
+        function showToast(message) {
+
+            $("toast")
+                .textContent =
+                message;
+
+            $("toast")
+                .classList
+                .add("show");
+
+
+            setTimeout(
+                () => {
+
+                    $("toast")
+                        .classList
+                        .remove("show");
+
+                },
+                2200
+            );
+
+        }
+
+
+        // =========================
+        // START
+        // =========================
+
+        checkLogin();
+
+    </script>
+
+</body>
+
+</html>
