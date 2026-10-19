@@ -1089,9 +1089,17 @@ async function serveRestaurantWebsite(req, res, next) {
         if (!safePath || !isAllowedWebsiteFile(safePath)) return res.status(404).send("File not found");
         const { data: file, error: fileError } = await supabase.storage.from(SITE_BUCKET).download(`${slug}/${safePath}`);
         if (fileError || !file) return res.status(404).send("Website file not found");
-        res.setHeader("Content-Type", require("mime-types").lookup(safePath) || "application/octet-stream");
-        res.setHeader("Cache-Control", "public, max-age=300");
+        const mime = require("mime-types");
+
+        const contentType =
+            mime.lookup(safePath) || "application/octet-stream";
+
+        res.setHeader("Content-Type", contentType);
+        res.setHeader("X-Content-Type-Options", "nosniff");
+        res.setHeader("Cache-Control", "no-cache");
+
         const buffer = Buffer.from(await file.arrayBuffer());
+
         return res.status(200).send(buffer);
     } catch (error) {
         console.error("Website serving error:", error.message);
