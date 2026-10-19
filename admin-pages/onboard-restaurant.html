@@ -680,13 +680,10 @@
 
         form.addEventListener("submit", async event => {
             event.preventDefault();
-
-            if (!form.reportValidity()) {
-                return;
-            }
+            if (!form.reportValidity()) return;
 
             const payload = {
-                restaurantName: restaurantName.value.trim(),
+                restaurantName: document.getElementById("restaurantName").value.trim(),
                 ownerName: document.getElementById("ownerName").value.trim(),
                 mobile: document.getElementById("mobile").value.trim(),
                 email: document.getElementById("email").value.trim(),
@@ -694,77 +691,75 @@
                 slug: slugInput.value.trim(),
                 price: Number(document.getElementById("price").value),
                 plan: document.getElementById("plan").value,
-                paymentReceived:
-                    document.getElementById("paymentReceived").checked,
+                paymentReceived: document.getElementById("paymentReceived").checked,
                 websiteSource: selectedSource,
                 repositoryUrl: repositoryUrl.value.trim(),
                 branch: document.getElementById("branch").value.trim(),
-                websiteFolder:
-                    document.getElementById("websiteFolder").value.trim()
+                websiteFolder: document.getElementById("websiteFolder").value.trim()
             };
 
-            if (selectedSource === "upload" && !websiteZip.files.length) {
-                status.textContent = "Please select a website ZIP file.";
+            const zipFile = websiteZip.files[0];
+            if (selectedSource === "upload") {
+                if (!zipFile) { status.textContent = "Please select a website ZIP file."; return; }
+                if (!zipFile.name.toLowerCase().endsWith(".zip")) { status.textContent = "Please select a .zip file."; return; }
+                if (zipFile.size > 5 * 1024 * 1024) { status.textContent = "ZIP must be 5 MB or smaller."; return; }
+            } else {
+                status.textContent = "GitHub import is saved as repository metadata only. ZIP upload is the publishing workflow currently enabled.";
+                if (!payload.repositoryUrl) return;
                 return;
             }
-
-            if (
-                selectedSource === "github" &&
-                !payload.repositoryUrl
-            ) {
-                status.textContent = "Please enter a GitHub repository URL.";
-                return;
-            }
-
-            status.textContent = "Creating restaurant...";
-
-            const submitButton = form.querySelector(
-                'button[type="submit"]'
-            );
 
             submitButton.disabled = true;
-
             try {
-                const response = await fetch("/api/restaurants", {
-                    method: "POST",
-                    credentials: "same-origin",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                status.textContent = "Creating restaurant record...";
+                const createResponse = await fetch("/api/restaurants", {
+                    method: "POST", credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
+                const created = await createResponse.json();
+                if (!createResponse.ok) throw new Error(created.message || "Restaurant creation failed.");
 
-                const result = await response.json();
+                status.textContent = "Preparing secure ZIP upload...";
+                const urlResponse = await fetch(`/api/restaurants/${encodeURIComponent(created.restaurant.slug)}/upload-url`, {
+                    method: "POST", credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
+                });
+                const uploadInfo = await urlResponse.json();
+                if (!urlResponse.ok) throw new Error(uploadInfo.message || "Could not prepare ZIP upload.");
 
-                if (!response.ok) {
-                    throw new Error(
-                        result.message || "Restaurant creation failed."
-                    );
+                status.textContent = "Uploading ZIP directly to storage...";
+                const signedUrl = uploadInfo.signedUrl.startsWith("http")
+                    ? uploadInfo.signedUrl
+                    : `${window.location.origin}${uploadInfo.signedUrl}`;
+                const rawUpload = await fetch(signedUrl, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/zip", "x-upsert": "true" },
+                    body: zipFile
+                });
+                if (!rawUpload.ok) {
+                    const detail = await rawUpload.text().catch(() => "");
+                    throw new Error("ZIP upload failed. Check Supabase Storage bucket and signed upload settings. " + detail.slice(0, 180));
                 }
 
-                status.textContent =
-                    `Restaurant "${result.restaurant.restaurant_name}" created. ` +
-                    "Website publishing is the next step.";
+                status.textContent = "Publishing website files... please wait.";
+                const publishResponse = await fetch(`/api/restaurants/${encodeURIComponent(created.restaurant.slug)}/publish`, {
+                    method: "POST", credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ path: uploadInfo.path })
+                });
+                const published = await publishResponse.json();
+                if (!publishResponse.ok) throw new Error(published.message || "Website publishing failed.");
 
-                alert(
-                    "Restaurant created successfully!\n\n" +
-                    "Restaurant: " + result.restaurant.restaurant_name + "\n" +
-                    "Website URL: https://vignadigital.com/" +
-                    result.restaurant.slug
-                );
-
+                const siteUrl = `${window.location.origin}/${created.restaurant.slug}`;
+                status.textContent = `Published successfully: ${siteUrl}`;
+                alert(`Restaurant created and website published!\n\nRestaurant: ${created.restaurant.restaurant_name}\nWebsite URL: ${siteUrl}`);
+                window.open(siteUrl, "_blank", "noopener");
             } catch (error) {
-                status.textContent = error.message;
-
+                status.textContent = error.message || "An unexpected error occurred.";
             } finally {
                 submitButton.disabled = false;
             }
-        });
-
-        app.get("/onboard-restaurant", requireAdmin, (req, res) => {
-            res.sendFile(
-                path.join(__dirname, "../admin-pages/onboard-restaurant.html")
-            );
         });
 
         updateWebsiteUrl();

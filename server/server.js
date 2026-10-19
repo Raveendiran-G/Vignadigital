@@ -7,6 +7,7 @@ const multer = require("multer");
 const cookieParser = require("cookie-parser");
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
+const JSZip = require("jszip");
 
 const supabase = require("./supabase");
 
@@ -944,6 +945,161 @@ app.post(
         }
     }
 );
+
+// ========================================
+// RESTAURANT WEBSITE UPLOAD + PUBLISHING
+// Required Supabase Storage buckets:
+//   website-uploads  (private)
+//   restaurant-sites (public)
+// ========================================
+const MAX_ZIP_BYTES = 5 * 1024 * 1024;
+const MAX_UNZIPPED_BYTES = 25 * 1024 * 1024;
+const MAX_ZIP_ENTRIES = 500;
+const UPLOAD_BUCKET = "website-uploads";
+const SITE_BUCKET = "restaurant-sites";
+
+function safeWebsitePath(value) {
+    const normalized = String(value || "")
+        .replace(/\\/g, "/")
+        .replace(/^\/+/, "");
+    if (!normalized || normalized.split("/").some(part => !part || part === "." || part === "..")) return null;
+    if (normalized.includes("\0")) return null;
+    return normalized;
+}
+
+function isAllowedWebsiteFile(filePath) {
+    const ext = path.extname(filePath).toLowerCase();
+    return [".html", ".htm", ".css", ".js", ".mjs", ".json", ".txt", ".xml", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico", ".avif", ".mp4", ".webm", ".woff", ".woff2", ".ttf", ".otf", ".pdf"].includes(ext);
+}
+
+// Step 1: after the restaurant record is created, request a signed URL.
+app.post("/api/restaurants/:slug/upload-url", requireAdmin, async (req, res) => {
+    try {
+        const slug = createRestaurantSlug(req.params.slug);
+        const { data: restaurant, error: restaurantError } = await supabase
+            .from("restaurants").select("id, slug, website_source").eq("slug", slug).single();
+        if (restaurantError || !restaurant) return res.status(404).json({ message: "Restaurant not found." });
+        if (restaurant.website_source !== "upload") return res.status(400).json({ message: "This restaurant is not configured for ZIP upload." });
+
+        const zipPath = `${slug}/${Date.now()}-${require("crypto").randomBytes(6).toString("hex")}.zip`;
+        const { data, error } = await supabase.storage.from(UPLOAD_BUCKET).createSignedUploadUrl(zipPath, { upsert: true });
+        if (error) {
+            console.error("Could not create signed upload URL:", error.message);
+            return res.status(500).json({ message: `Storage upload setup failed. Ensure the private '${UPLOAD_BUCKET}' bucket exists.` });
+        }
+        return res.json({ path: zipPath, token: data.token, signedUrl: data.signedUrl, bucket: UPLOAD_BUCKET });
+    } catch (error) {
+        console.error("Upload URL error:", error.message);
+        return res.status(500).json({ message: "Could not prepare website upload." });
+    }
+});
+
+// Step 2: server downloads the ZIP from Storage, validates it, and publishes files.
+app.post("/api/restaurants/:slug/publish", requireAdmin, async (req, res) => {
+    const slug = createRestaurantSlug(req.params.slug);
+    try {
+        const { path: zipPath } = req.body || {};
+        if (!zipPath || !String(zipPath).startsWith(`${slug}/`) || String(zipPath).includes("..")) {
+            return res.status(400).json({ message: "Invalid uploaded ZIP path." });
+        }
+        const { data: restaurant, error: restaurantError } = await supabase
+            .from("restaurants").select("id, slug, website_source").eq("slug", slug).single();
+        if (restaurantError || !restaurant) return res.status(404).json({ message: "Restaurant not found." });
+
+        await supabase.from("restaurants").update({ website_status: "building" }).eq("slug", slug);
+        const { data: zipBlob, error: downloadError } = await supabase.storage.from(UPLOAD_BUCKET).download(zipPath);
+        if (downloadError || !zipBlob) throw new Error("Could not read the uploaded ZIP from Storage.");
+        if (zipBlob.size > MAX_ZIP_BYTES) throw new Error("ZIP exceeds the 5 MB limit.");
+
+        const zip = await JSZip.loadAsync(await zipBlob.arrayBuffer(), { checkCRC32: true });
+        const entries = Object.values(zip.files).filter(entry => !entry.dir);
+        if (!entries.length || entries.length > MAX_ZIP_ENTRIES) throw new Error(`ZIP must contain 1–${MAX_ZIP_ENTRIES} files.`);
+
+        // Accept either index.html at ZIP root or one top-level project folder.
+        let prefix = "";
+        if (!zip.files["index.html"]) {
+            const roots = [...new Set(entries.map(entry => entry.name.split("/")[0]))];
+            if (roots.length === 1 && zip.files[`${roots[0]}/index.html`]) prefix = `${roots[0]}/`;
+        }
+        if (!zip.files[`${prefix}index.html`]) throw new Error("ZIP must contain index.html at its root or inside one top-level folder.");
+
+        let totalBytes = 0;
+        const publishFiles = [];
+        for (const entry of entries) {
+            let relative = entry.name.startsWith(prefix) ? entry.name.slice(prefix.length) : entry.name;
+            if (!relative) continue;
+            const safePath = safeWebsitePath(relative);
+            if (!safePath || !isAllowedWebsiteFile(safePath)) throw new Error(`Unsupported or unsafe file in ZIP: ${entry.name}`);
+            const buffer = await entry.async("nodebuffer");
+            totalBytes += buffer.length;
+            if (totalBytes > MAX_UNZIPPED_BYTES) throw new Error("Uncompressed website exceeds the 25 MB limit.");
+            publishFiles.push({ path: safePath, buffer });
+        }
+
+        // Remove previous published files for this slug before uploading the new version.
+        let offset = 0;
+        while (true) {
+            const { data: oldFiles, error: listError } = await supabase.storage.from(SITE_BUCKET).list(slug, { limit: 100, offset });
+            if (listError) throw new Error("Could not inspect existing published website files. Check the public storage bucket.");
+            if (!oldFiles || !oldFiles.length) break;
+            const oldPaths = oldFiles.filter(item => item.name).map(item => `${slug}/${item.name}`);
+            if (oldPaths.length) await supabase.storage.from(SITE_BUCKET).remove(oldPaths);
+            if (oldFiles.length < 100) break;
+            offset += oldFiles.length;
+        }
+
+        for (const file of publishFiles) {
+            const destination = `${slug}/${file.path}`;
+            const { error: uploadError } = await supabase.storage.from(SITE_BUCKET).upload(destination, file.buffer, {
+                contentType: require("mime-types").lookup(file.path) || "application/octet-stream",
+                upsert: true,
+                cacheControl: "3600"
+            });
+            if (uploadError) throw new Error(`Failed to publish ${file.path}: ${uploadError.message}`);
+        }
+
+        const { error: updateError } = await supabase.from("restaurants").update({
+            website_status: "published",
+            website_path: `${slug}/index.html`,
+            updated_at: new Date().toISOString()
+        }).eq("slug", slug);
+        if (updateError) throw new Error("Files were uploaded, but the restaurant status could not be updated.");
+
+        await supabase.storage.from(UPLOAD_BUCKET).remove([zipPath]);
+        return res.json({ success: true, message: "Website published successfully.", url: `/${slug}` });
+    } catch (error) {
+        console.error("Website publishing failed:", error.message);
+        await supabase.from("restaurants").update({ website_status: "failed" }).eq("slug", slug);
+        return res.status(500).json({ message: error.message || "Website publishing failed." });
+    }
+});
+
+// Serve published websites at /restaurant-slug and /restaurant-slug/assets/...
+async function serveRestaurantWebsite(req, res, next) {
+    try {
+        const slug = createRestaurantSlug(req.params.slug);
+        if (!slug || ["api", "admin", "onboard-restaurant", "images", "videos", "favicon.ico"].includes(slug)) return next();
+        const { data: restaurant, error } = await supabase.from("restaurants")
+            .select("slug, website_status").eq("slug", slug).maybeSingle();
+        if (error || !restaurant || restaurant.website_status !== "published") return next();
+        let relative = req.params.filePath || "index.html";
+        relative = decodeURIComponent(relative);
+        if (relative === "" || relative === "/") relative = "index.html";
+        const safePath = safeWebsitePath(relative);
+        if (!safePath || !isAllowedWebsiteFile(safePath)) return res.status(404).send("File not found");
+        const { data: file, error: fileError } = await supabase.storage.from(SITE_BUCKET).download(`${slug}/${safePath}`);
+        if (fileError || !file) return res.status(404).send("Website file not found");
+        res.setHeader("Content-Type", require("mime-types").lookup(safePath) || "application/octet-stream");
+        res.setHeader("Cache-Control", "public, max-age=300");
+        const buffer = Buffer.from(await file.arrayBuffer());
+        return res.status(200).send(buffer);
+    } catch (error) {
+        console.error("Website serving error:", error.message);
+        return res.status(500).send("Unable to load this restaurant website.");
+    }
+}
+app.get("/:slug", (req, res, next) => { req.params.filePath = "index.html"; return serveRestaurantWebsite(req, res, next); });
+app.get("/:slug/*filePath", serveRestaurantWebsite);
 
 // ========================================
 // ADD MENU ITEM
