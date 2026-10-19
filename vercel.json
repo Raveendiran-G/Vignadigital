@@ -3,16 +3,33 @@
   "builds": [
     {
       "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "server/**,admin-pages/**,public/**"
-      }
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "/api/index.js"
+    },
+    {
+      "src": "/admin/?",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/onboard-restaurant/?",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/([^/]+)(?:/(.*))?",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
