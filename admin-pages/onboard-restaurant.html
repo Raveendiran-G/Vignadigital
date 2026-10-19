@@ -761,6 +761,12 @@
             }
         });
 
+        app.get("/onboard-restaurant", requireAdmin, (req, res) => {
+            res.sendFile(
+                path.join(__dirname, "../admin-pages/onboard-restaurant.html")
+            );
+        });
+
         updateWebsiteUrl();
     </script>
 
