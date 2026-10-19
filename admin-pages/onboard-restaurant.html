@@ -734,14 +734,6 @@
                 return;
             }
 
-            // GitHub import is not implemented by the current server publishing API.
-            // Stop here rather than creating a record that cannot be published.
-            if (selectedSource === "github") {
-                status.textContent =
-                    "GitHub import publishing is not enabled yet. Choose Upload Files and select a website ZIP.";
-                return;
-            }
-
             const submitButton = form.querySelector('button[type="submit"]');
             submitButton.disabled = true;
 
@@ -759,7 +751,47 @@
                 const slug = restaurant.slug;
                 const publishedUrl = `${PUBLIC_SITE_BASE}/${encodeURIComponent(slug)}`;
 
-                // Step 2: ask the server for a temporary direct-to-Storage upload URL.
+                // GitHub import: download and publish the public repository on the server.
+                if (selectedSource === "github") {
+                    status.textContent = "Step 2/2: Importing GitHub repository and publishing website...";
+                    const githubResponse = await fetch(
+                        `/api/restaurants/${encodeURIComponent(slug)}/import-github`,
+                        {
+                            method: "POST",
+                            credentials: "same-origin",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                repositoryUrl: payload.repositoryUrl,
+                                branch: payload.branch || "main",
+                                websiteFolder: payload.websiteFolder
+                            })
+                        }
+                    );
+                    const githubResult = await readApiResponse(githubResponse);
+                    if (!githubResult.success) {
+                        throw new Error(githubResult.message || "GitHub import did not complete.");
+                    }
+
+                    websiteUrl.href = publishedUrl;
+                    websiteUrl.textContent = publishedUrl;
+                    status.textContent = "";
+                    status.append(document.createTextNode("GitHub website published successfully: "));
+                    const githubLink = document.createElement("a");
+                    githubLink.href = publishedUrl;
+                    githubLink.target = "_blank";
+                    githubLink.rel = "noopener noreferrer";
+                    githubLink.textContent = publishedUrl;
+                    status.append(githubLink);
+
+                    alert(
+                        "Restaurant created and GitHub website published successfully!\\n\\n" +
+                        "Restaurant: " + restaurant.restaurant_name + "\\n" +
+                        "Website URL: " + publishedUrl
+                    );
+                    return;
+                }
+
+                // ZIP upload: request a temporary direct-to-Storage upload URL.
                 status.textContent = "Step 2/4: Preparing secure ZIP upload...";
                 const signResponse = await fetch(
                     `/api/restaurants/${encodeURIComponent(slug)}/upload-url`,
