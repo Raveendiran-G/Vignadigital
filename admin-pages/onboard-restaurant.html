@@ -687,12 +687,24 @@
                 `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
         });
 
+        async function readApiResponse(response) {
+            const text = await response.text();
+            let data = {};
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch {
+                data = { message: text || `Request failed (${response.status})` };
+            }
+            if (!response.ok) {
+                throw new Error(data.message || `Request failed (${response.status})`);
+            }
+            return data;
+        }
+
         form.addEventListener("submit", async event => {
             event.preventDefault();
 
-            if (!form.reportValidity()) {
-                return;
-            }
+            if (!form.reportValidity()) return;
 
             const payload = {
                 restaurantName: restaurantName.value.trim(),
@@ -703,68 +715,125 @@
                 slug: slugInput.value.trim(),
                 price: Number(document.getElementById("price").value),
                 plan: document.getElementById("plan").value,
-                paymentReceived:
-                    document.getElementById("paymentReceived").checked,
+                paymentReceived: document.getElementById("paymentReceived").checked,
                 websiteSource: selectedSource,
                 repositoryUrl: repositoryUrl.value.trim(),
                 branch: document.getElementById("branch").value.trim(),
-                websiteFolder:
-                    document.getElementById("websiteFolder").value.trim()
+                websiteFolder: document.getElementById("websiteFolder").value.trim()
             };
 
-            if (selectedSource === "upload" && !websiteZip.files.length) {
+            const zipFile = websiteZip.files[0];
+
+            if (selectedSource === "upload" && !zipFile) {
                 status.textContent = "Please select a website ZIP file.";
                 return;
             }
 
-            if (
-                selectedSource === "github" &&
-                !payload.repositoryUrl
-            ) {
-                status.textContent = "Please enter a GitHub repository URL.";
+            if (selectedSource === "upload" && zipFile.size > 5 * 1024 * 1024) {
+                status.textContent = "ZIP file must be 5 MB or smaller.";
                 return;
             }
 
-            status.textContent = "Creating restaurant...";
+            // GitHub import is not implemented by the current server publishing API.
+            // Stop here rather than creating a record that cannot be published.
+            if (selectedSource === "github") {
+                status.textContent =
+                    "GitHub import publishing is not enabled yet. Choose Upload Files and select a website ZIP.";
+                return;
+            }
 
-            const submitButton = form.querySelector(
-                'button[type="submit"]'
-            );
-
+            const submitButton = form.querySelector('button[type="submit"]');
             submitButton.disabled = true;
 
             try {
-                const response = await fetch("/api/restaurants", {
+                // Step 1: create the restaurant record.
+                status.textContent = "Step 1/4: Creating restaurant...";
+                const createResponse = await fetch("/api/restaurants", {
                     method: "POST",
                     credentials: "same-origin",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
+                const created = await readApiResponse(createResponse);
+                const restaurant = created.restaurant;
+                const slug = restaurant.slug;
+                const publishedUrl = `${PUBLIC_SITE_BASE}/${encodeURIComponent(slug)}`;
 
-                const result = await response.json();
+                // Step 2: ask the server for a temporary direct-to-Storage upload URL.
+                status.textContent = "Step 2/4: Preparing secure ZIP upload...";
+                const signResponse = await fetch(
+                    `/api/restaurants/${encodeURIComponent(slug)}/upload-url`,
+                    {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ fileName: zipFile.name })
+                    }
+                );
+                const uploadInfo = await readApiResponse(signResponse);
 
-                if (!response.ok) {
+                if (!uploadInfo.signedUrl || !uploadInfo.path) {
+                    throw new Error("The server did not return a valid ZIP upload URL.");
+                }
+
+                // Step 3: upload the ZIP directly to Supabase Storage (not through Vercel).
+                status.textContent = "Step 3/4: Uploading website ZIP...";
+                const storageResponse = await fetch(uploadInfo.signedUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/zip",
+                        "x-upsert": "true"
+                    },
+                    body: zipFile
+                });
+
+                if (!storageResponse.ok) {
+                    const storageError = await storageResponse.text().catch(() => "");
                     throw new Error(
-                        result.message || "Restaurant creation failed."
+                        `ZIP upload failed (${storageResponse.status}). ` +
+                        (storageError.slice(0, 250) || "Check the Supabase signed upload URL and bucket settings.")
                     );
                 }
 
-                status.textContent =
-                    `Restaurant "${result.restaurant.restaurant_name}" created. ` +
-                    "Website publishing is the next step.";
+                // Step 4: server validates, extracts and publishes website files.
+                status.textContent = "Step 4/4: Publishing website files...";
+                const publishResponse = await fetch(
+                    `/api/restaurants/${encodeURIComponent(slug)}/publish`,
+                    {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ path: uploadInfo.path })
+                    }
+                );
+                const published = await readApiResponse(publishResponse);
+
+                if (!published.success) {
+                    throw new Error(published.message || "Website publishing did not complete.");
+                }
+
+                websiteUrl.href = publishedUrl;
+                websiteUrl.textContent = publishedUrl;
+                status.innerHTML = "";
+                status.append(
+                    document.createTextNode(`Published successfully: `)
+                );
+                const successLink = document.createElement("a");
+                successLink.href = publishedUrl;
+                successLink.target = "_blank";
+                successLink.rel = "noopener noreferrer";
+                successLink.textContent = publishedUrl;
+                status.append(successLink);
 
                 alert(
-                    "Restaurant created successfully!\n\n" +
-                    "Restaurant: " + result.restaurant.restaurant_name + "\n" +
-                    "Website URL: " +
-                    `${PUBLIC_SITE_BASE}/${encodeURIComponent(result.restaurant.slug)}`
+                    "Restaurant created and website published successfully!\n\n" +
+                    "Restaurant: " + restaurant.restaurant_name + "\n" +
+                    "Website URL: " + publishedUrl
                 );
-
             } catch (error) {
-                status.textContent = error.message;
-
+                console.error("Restaurant onboarding/publishing failed:", error);
+                status.textContent = error.message ||
+                    "Something went wrong while creating or publishing the website.";
             } finally {
                 submitButton.disabled = false;
             }

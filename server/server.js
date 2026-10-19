@@ -969,7 +969,7 @@ function safeWebsitePath(value) {
 
 function isAllowedWebsiteFile(filePath) {
     const ext = path.extname(filePath).toLowerCase();
-    return [".html", ".htm", ".css", ".js", ".mjs", ".json", ".txt", ".xml", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico", ".avif", ".mp4", ".webm", ".woff", ".woff2", ".ttf", ".otf", ".pdf"].includes(ext);
+    return [".html", ".htm", ".css", ".js", ".mjs", ".json", ".txt", ".xml", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico", ".avif", ".mp4", ".webm", ".woff", ".woff2", ".ttf", ".otf", ".pdf", ".md"].includes(ext);
 }
 
 // Step 1: after the restaurant record is created, request a signed URL.
@@ -1083,7 +1083,9 @@ async function serveRestaurantWebsite(req, res, next) {
             .select("slug, website_status").eq("slug", slug).maybeSingle();
         if (error || !restaurant || restaurant.website_status !== "published") return next();
         let relative = req.params.filePath || "index.html";
-        relative = decodeURIComponent(relative);
+        // Express 5 wildcard parameters may be arrays of path segments.
+        if (Array.isArray(relative)) relative = relative.join("/");
+        relative = decodeURIComponent(String(relative));
         if (relative === "" || relative === "/") relative = "index.html";
         const safePath = safeWebsitePath(relative);
         if (!safePath || !isAllowedWebsiteFile(safePath)) return res.status(404).send("File not found");
