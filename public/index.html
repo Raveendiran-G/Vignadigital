@@ -823,6 +823,36 @@
             color: #302b27
         }
 
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+
+            width: 100%;
+            box-sizing: border-box;
+
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            color: #5a2d22;
+
+            padding: 10px 0;
+            margin: 6px 0;
+
+            border-top: 1px dashed #9c8b7d;
+            border-bottom: 1px dashed #9c8b7d;
+        }
+
+        .receipt-total span:first-child {
+            text-align: left;
+        }
+
+        .receipt-total span:last-child {
+            text-align: right;
+            white-space: nowrap;
+        }
+
         .printer-machine {
             height: 90px;
             background: linear-gradient(#424242, #171717);
@@ -1015,37 +1045,63 @@
         <section class="receipt-paper hide" id="receiptFinalPaper">
             <header class="receipt-head">
                 <img class="receipt-icon" src="/images/logo.png" alt="New Desi Tadka brand logo">
+
                 <h2 id="receiptTitle">New Desi Tadka</h2>
                 <p>FROM FARM TO TABLE</p>
                 <p>100% VEG</p>
-                <p
-                    style="border-top:1px dashed #9c8b7d;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800;letter-spacing:.5px">
-                    ORDER RECEIPT</p>
+
+                <p style="border-top:1px dashed #9c8b7d;
+                  margin-top:10px;
+                  padding-top:10px;
+                  font-size:11px;
+                  font-weight:800;
+                  letter-spacing:.5px">
+                    ORDER RECEIPT
+                </p>
             </header>
+
             <div class="receipt-meta" id="receiptMeta"></div>
+
             <div class="receipt-items" id="receiptItems"></div>
+
+            <!-- Food Subtotal -->
             <div class="receipt-summary-line">
                 <span>Food Subtotal</span>
                 <span id="receiptSubtotal">₹0.00</span>
             </div>
+
+            <!-- Tax -->
             <div class="receipt-summary-line">
                 <span>Tax (5%)</span>
                 <span id="receiptTax">₹0.00</span>
             </div>
 
-            
+            <!-- Total with dashed lines above and below -->
             <div class="receipt-total">
                 <span>Total</span>
                 <span id="receiptTotal">₹0.00</span>
             </div>
+
             <div class="receipt-foot">
                 <div class="thanks">Thank you for ordering!</div>
                 <div>We will confirm your order shortly.</div>
-                <div class="leaf-divider">◆</div><strong style="color:#5a2d22">New Desi Tadka</strong><br>Good Food
-                Brings People Together<br><span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span>
+
+                <div class="leaf-divider">◆</div>
+
+                <strong style="color:#5a2d22">New Desi Tadka</strong><br>
+                Good Food Brings People Together<br>
+                <span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span>
             </div>
-            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">⌂ &nbsp; Back
-                    to Menu</button><button type="button" id="printReceipt">Print Receipt</button></div>
+
+            <div class="receipt-actions">
+                <button type="button" class="receipt-secondary" id="closeReceipt">
+                    ⌂ &nbsp; Back to Menu
+                </button>
+
+                <button type="button" id="printReceipt">
+                    Print Receipt
+                </button>
+            </div>
         </section>
     </div>
 
