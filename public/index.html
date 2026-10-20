@@ -394,9 +394,19 @@
         .receipt-head{text-align:center;border-bottom:1px dashed #aaa;padding:6px 0 16px;margin-bottom:14px}.receipt-head .receipt-icon{font-size:28px}.receipt-head h2{font-size:19px;letter-spacing:1px;margin:5px 0}.receipt-head p{font-size:11px;color:#68615b}
         .receipt-status{text-align:center;background:#e8f6e9;color:#216b31;border-radius:6px;padding:8px;font:700 12px system-ui;margin:12px 0}
         .receipt-meta{font-size:12px;line-height:1.8;margin-bottom:13px}.receipt-items{border-top:1px dashed #aaa;border-bottom:1px dashed #aaa;padding:9px 0;margin:10px 0}.receipt-row{display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:6px 0}.receipt-row span:first-child{min-width:0;overflow-wrap:anywhere}.receipt-total{display:flex;justify-content:space-between;font-weight:900;font-size:17px;padding:12px 0}.receipt-foot{text-align:center;font-size:11px;line-height:1.6;color:#655e57;padding:10px 0 3px}.receipt-actions{display:flex;gap:10px;margin-top:16px}.receipt-actions button{flex:1;min-height:44px;border:0;border-radius:9px;padding:10px;background:#5a2d22;color:#fff;font-weight:800;cursor:pointer}.receipt-actions .receipt-secondary{background:#f3e9df;color:#5a2d22}
+        .receipt-printer-stage{width:min(100%,430px);text-align:center;color:#fff;animation:printerStageIn .45s ease both}
+        .printer-brand{font-weight:900;letter-spacing:2px;margin-bottom:14px}
+        .receipt-printing-paper{width:min(78%,310px);min-height:300px;margin:0 auto -14px;position:relative;z-index:2;padding:24px 18px 34px;background:#fffdf7;color:#5a2d22;box-shadow:0 12px 35px #0005;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;clip-path:polygon(0 0,100% 0,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%);animation:paperFeed 1.2s ease-in-out both}
+        .printing-logo{font-size:34px}.receipt-printing-paper h2{font-size:19px;margin:7px 0}.receipt-printing-paper p{font-size:10px;margin-bottom:18px}.receipt-printing-paper hr{border:0;border-top:1px dashed #aaa;margin:15px 0}.printer-icon{font-size:42px;margin-top:18px;color:#302b27}
+        .printer-machine{height:90px;background:linear-gradient(#424242,#171717);border-radius:13px 13px 22px 22px;box-shadow:0 20px 35px #0008;margin:0 auto;width:min(100%,370px);padding-top:15px;position:relative;color:#d6b48c;font-size:11px;letter-spacing:2px}
+        .printer-machine span{display:block;width:42px;height:6px;border-radius:8px;background:#ffb02e;box-shadow:0 0 12px #ffb02e;margin:0 auto 18px}
+        .receipt-paper.hide{display:none!important}.receipt-paper{animation:receiptPrint .75s cubic-bezier(.2,.75,.25,1) both}
         @keyframes receiptFade{from{opacity:0}to{opacity:1}}
         @keyframes receiptPrint{0%{opacity:0;transform:translateY(-70px) scaleY(.15)}60%{opacity:1;transform:translateY(5px) scaleY(1.03)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
-        @media(prefers-reduced-motion:reduce){.receipt-overlay.show,.receipt-paper{animation:none}}
+        @keyframes printerStageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes paperFeed{0%{transform:translateY(-45px);opacity:.25}65%{transform:translateY(4px);opacity:1}100%{transform:translateY(0);opacity:1}}
+        @media print{body *{visibility:hidden!important}#receiptFinalPaper,#receiptFinalPaper *{visibility:visible!important}#receiptFinalPaper{display:block!important;position:absolute;left:0;top:0;width:100%;max-height:none;overflow:visible;box-shadow:none;animation:none}.receipt-actions{display:none!important}.receipt-overlay{position:absolute;background:white;display:block!important;padding:0}}
+        @media(prefers-reduced-motion:reduce){.receipt-overlay.show,.receipt-paper,.receipt-printing-paper,.receipt-printer-stage{animation:none}}
 
 
     </style>
@@ -412,7 +422,7 @@
     <main id="out"></main>
 
     <div class="cart-dock" id="cartDock" aria-live="polite">
-        <div><strong id="cartSummary">0 items · ₹0</strong><small>Review your order before sending</small></div>
+        <div><strong id="cartSummary">0 items · ₹0</strong><small>Review your items and confirm your order</small></div>
         <button type="button" id="openCheckout">View cart / Order</button>
     </div>
     <div class="checkout-overlay" id="checkoutOverlay" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
@@ -426,22 +436,27 @@
                 <label for="orderType">Order type *</label><select id="orderType" name="orderType"><option value="Takeaway">Takeaway</option><option value="Delivery">Delivery</option><option value="Dine-in">Dine-in</option></select>
                 <label for="customerAddress">Address / table number</label><textarea id="customerAddress" name="address" maxlength="300" placeholder="Required for delivery; otherwise optional"></textarea>
                 <label for="orderNotes">Special instructions</label><textarea id="orderNotes" name="notes" maxlength="300" placeholder="Optional"></textarea>
-                <div class="checkout-buttons"><button class="checkout-cancel" type="button" id="closeCheckout">Continue shopping</button><button class="checkout-submit" type="submit">Send order on WhatsApp</button></div>
-                <p style="font-size:12px;color:#666;margin-top:10px">WhatsApp will open with your order details. Please press Send in WhatsApp to place the order.</p>
+                <div class="checkout-buttons"><button class="checkout-cancel" type="button" id="closeCheckout">Continue shopping</button><button class="checkout-submit" type="submit">Confirm Order</button></div>
+                <p style="font-size:12px;color:#666;margin-top:10px">Confirm to generate your animated order receipt.</p>
             </form>
         </section>
     </div>
 
 
     <div class="receipt-overlay" id="receiptOverlay" role="dialog" aria-modal="true" aria-labelledby="receiptTitle" aria-live="polite">
-        <section class="receipt-paper">
+        <section class="receipt-printer-stage" id="receiptPrinterStage" aria-label="Printing receipt animation">
+            <div class="printer-brand">NEW DESI TADKA</div>
+            <div class="receipt-printing-paper"><div class="printing-logo">♨</div><h2>NEW DESI TADKA</h2><p>FROM FARM TO TABLE · 100% VEG</p><hr><strong>Preparing your bill...</strong><div class="printer-icon">▤</div></div>
+            <div class="printer-machine"><span></span><b>THERMAL RECEIPT PRINTER</b></div>
+        </section>
+        <section class="receipt-paper hide" id="receiptFinalPaper">
             <header class="receipt-head"><div class="receipt-icon">🧾</div><h2 id="receiptTitle">NEW DESI TADKA</h2><p>ORDER RECEIPT · CUSTOMER COPY</p></header>
-            <div class="receipt-status">✓ Order summary prepared</div>
+            <div class="receipt-status" id="receiptStatus">✓ Order confirmed on this page</div>
             <div class="receipt-meta" id="receiptMeta"></div>
             <div class="receipt-items" id="receiptItems"></div>
             <div class="receipt-total"><span>TOTAL</span><span id="receiptTotal">₹0</span></div>
-            <div class="receipt-foot">Thank you for ordering!<br><strong>WhatsApp must be sent to place your order.</strong><br>Restaurant confirmation is still pending.</div>
-            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">Close receipt</button><button type="button" id="receiptWhatsApp">Open WhatsApp</button></div>
+            <div class="receipt-foot">Thank you for ordering!<br><strong>Please keep this receipt for your reference.</strong><br>Contact the restaurant to verify order acceptance.</div>
+            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">Back to Menu</button><button type="button" id="printReceipt">Print Receipt</button></div>
         </section>
     </div>
 
@@ -451,9 +466,6 @@
 
         const $ = id => document.getElementById(id);
 
-        // Set the restaurant's WhatsApp number here, including country code,
-        // digits only. Example for India: 919876543210 (do not include +).
-        const RESTAURANT_WHATSAPP = "REPLACE_WITH_RESTAURANT_WHATSAPP_NUMBER";
         const ORDER_RESTAURANT_NAME = "New Desi Tadka";
         const cart = new Map();
         const money = value => "₹" + Number(value || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
@@ -485,35 +497,32 @@
         });
         $("checkoutForm").addEventListener("submit",e=>{
             e.preventDefault(); if(!cart.size)return;
-            if(!/^\d{10,15}$/.test(RESTAURANT_WHATSAPP)){alert("Please configure RESTAURANT_WHATSAPP in index.html with the restaurant's WhatsApp number, including country code. Example: 919876543210");return;}
             const name=$("customerName").value.trim(), phone=$("customerPhone").value.trim();
             const type=$("orderType").value, address=$("customerAddress").value.trim(), notes=$("orderNotes").value.trim();
+            if(!name){$("customerName").focus();return;}
+            if(!/^[0-9+() -]{8,18}$/.test(phone)){alert("Please enter a valid mobile number.");$("customerPhone").focus();return;}
             if(type==="Delivery"&&!address){alert("Please enter the delivery address.");$("customerAddress").focus();return;}
-            const lines=[...cart.values()].map(i=>`• ${i.name} (${i.category}) × ${i.qty} = ${money(i.price*i.qty)}`);
-            const message=[`NEW ORDER - ${ORDER_RESTAURANT_NAME}`,"",`Customer: ${name}`,`Phone: ${phone}`,`Order type: ${type}`,address?`Address / table: ${address}`:"", "Items:",...lines,"",`TOTAL: ${money(cartTotal())}`,notes?`Instructions: ${notes}`:"", "Please confirm availability and order acceptance."].filter(Boolean).join("\n");
-            const url=`https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`;
-            // Open WhatsApp directly from the submit gesture to avoid popup blockers.
-            const whatsappWindow=window.open(url,"_blank","noopener,noreferrer");
             const orderNumber="NDT-"+Date.now().toString().slice(-8);
             const stamp=new Date().toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});
             $("receiptMeta").innerHTML=`Receipt No: <strong>${orderNumber}</strong><br>Date: ${escapeHtml(stamp)}<br>Customer: ${escapeHtml(name)}<br>Mobile: ${escapeHtml(phone)}<br>Order type: ${escapeHtml(type)}${address?`<br>Address / table: ${escapeHtml(address)}`:""}${notes?`<br>Notes: ${escapeHtml(notes)}`:""}`;
             $("receiptItems").innerHTML=[...cart.values()].map(i=>`<div class="receipt-row"><span>${escapeHtml(i.name)} × ${i.qty}<br><small>${money(i.price)} each</small></span><strong>${money(i.price*i.qty)}</strong></div>`).join("");
             $("receiptTotal").textContent=money(cartTotal());
-            $("checkoutOverlay").classList.remove("show");
             $("receiptOverlay").classList.add("show");
-            if(!whatsappWindow){$("receiptWhatsApp").textContent="Try WhatsApp again";}
+            $("receiptPrinterStage").classList.remove("hide");
+            $("receiptFinalPaper").classList.add("hide");
+            $("checkoutOverlay").classList.remove("show");
+            // Screen 3: CSS thermal-printer animation; Screen 4: final bill.
+            window.setTimeout(()=>{
+                $("receiptPrinterStage").classList.add("hide");
+                $("receiptFinalPaper").classList.remove("hide");
+                $("receiptFinalPaper").style.animation="none";
+                void $("receiptFinalPaper").offsetWidth;
+                $("receiptFinalPaper").style.animation="";
+            },1600);
         });
         $("closeReceipt").addEventListener("click",()=>$("receiptOverlay").classList.remove("show"));
-        $("receiptOverlay").addEventListener("click",e=>{if(e.target===$("receiptOverlay"))$("receiptOverlay").classList.remove("show");});
-        $("receiptWhatsApp").addEventListener("click",()=>{
-            if(!cart.size)return;
-            const name=$("customerName").value.trim(), phone=$("customerPhone").value.trim();
-            const type=$("orderType").value, address=$("customerAddress").value.trim(), notes=$("orderNotes").value.trim();
-            const lines=[...cart.values()].map(i=>`• ${i.name} (${i.category}) × ${i.qty} = ${money(i.price*i.qty)}`);
-            const message=[`NEW ORDER - ${ORDER_RESTAURANT_NAME}`,"",`Customer: ${name}`,`Phone: ${phone}`,`Order type: ${type}`,address?`Address / table: ${address}`:"", "Items:",...lines,"",`TOTAL: ${money(cartTotal())}`,notes?`Instructions: ${notes}`:"", "Please confirm availability and order acceptance."].filter(Boolean).join("\n");
-            window.open(`https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
-        });
-
+        $("receiptOverlay").addEventListener("click",e=>{if(e.target===$("receiptOverlay") && !$("receiptFinalPaper").classList.contains("hide"))$("receiptOverlay").classList.remove("show");});
+        $("printReceipt").addEventListener("click",()=>window.print());
 
         // =====================================================
         // CATEGORY HOVER VIDEOS
