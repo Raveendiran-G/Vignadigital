@@ -1182,7 +1182,18 @@
         $("closeReceipt").addEventListener("click", () => $("receiptOverlay").classList.remove("show"));
         $("receiptOverlay").addEventListener("click", e => { if (e.target === $("receiptOverlay") && !$("receiptFinalPaper").classList.contains("hide")) $("receiptOverlay").classList.remove("show"); });
         $("printReceipt").addEventListener("click", () => window.print());
+        const receiptOverlay = document.getElementById("receiptOverlay");
+        const receiptPaper = document.getElementById("receiptFinalPaper");
 
+        // Prevent clicks inside the receipt from reaching the overlay.
+        receiptPaper.addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
+
+        // Prevent clicking outside the receipt from closing it.
+        receiptOverlay.addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
         // =====================================================
         // CATEGORY HOVER VIDEOS
         // =====================================================
