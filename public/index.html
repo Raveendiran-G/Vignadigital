@@ -689,8 +689,8 @@
         .receipt-summary {
             font-size: 10px;
             line-height: 1.7;
-            padding: 4px 0 2px;
-            border-bottom: 0
+            padding: 4px 0 8px;
+            border-bottom: 1px dashed #9c8b7d
         }
 
         .receipt-summary-line {
@@ -706,20 +706,12 @@
 
         .receipt-total {
             display: flex;
-            align-items: baseline;
             justify-content: space-between;
             gap: 12px;
-            width: 100%;
             font-weight: 900;
             font-size: 13px;
-            padding: 8px 0 4px;
-            border-bottom: 0
-        }
-
-        .receipt-total span:last-child {
-            text-align: right;
-            white-space: nowrap;
-            margin-left: auto
+            padding: 8px 0 12px;
+            border-bottom: 1px dashed #9c8b7d
         }
 
         .receipt-foot {
@@ -821,36 +813,6 @@
             font-size: 42px;
             margin-top: 18px;
             color: #302b27
-        }
-
-        .receipt-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-
-            width: 100%;
-            box-sizing: border-box;
-
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-            font-size: 13px;
-            font-weight: 900;
-            color: #5a2d22;
-
-            padding: 10px 0;
-            margin: 6px 0;
-
-            border-top: 1px dashed #9c8b7d;
-            border-bottom: 1px dashed #9c8b7d;
-        }
-
-        .receipt-total span:first-child {
-            text-align: left;
-        }
-
-        .receipt-total span:last-child {
-            text-align: right;
-            white-space: nowrap;
         }
 
         .printer-machine {
@@ -1045,63 +1007,36 @@
         <section class="receipt-paper hide" id="receiptFinalPaper">
             <header class="receipt-head">
                 <img class="receipt-icon" src="/images/logo.png" alt="New Desi Tadka brand logo">
-
                 <h2 id="receiptTitle">New Desi Tadka</h2>
                 <p>FROM FARM TO TABLE</p>
                 <p>100% VEG</p>
-
-                <p style="border-top:1px dashed #9c8b7d;
-                  margin-top:10px;
-                  padding-top:10px;
-                  font-size:11px;
-                  font-weight:800;
-                  letter-spacing:.5px">
-                    ORDER RECEIPT
-                </p>
+                <p
+                    style="border-top:1px dashed #9c8b7d;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800;letter-spacing:.5px">
+                    ORDER RECEIPT</p>
             </header>
-
             <div class="receipt-meta" id="receiptMeta"></div>
-
             <div class="receipt-items" id="receiptItems"></div>
-
-            <!-- Food Subtotal -->
             <div class="receipt-summary-line">
                 <span>Food Subtotal</span>
                 <span id="receiptSubtotal">₹0.00</span>
             </div>
-
-            <!-- Tax -->
             <div class="receipt-summary-line">
                 <span>Tax (5%)</span>
                 <span id="receiptTax">₹0.00</span>
             </div>
 
-            <!-- Total with dashed lines above and below -->
-            <div class="receipt-total">
+            <div class="receipt-row receipt-total">
                 <span>Total</span>
                 <span id="receiptTotal">₹0.00</span>
             </div>
-
             <div class="receipt-foot">
                 <div class="thanks">Thank you for ordering!</div>
                 <div>We will confirm your order shortly.</div>
-
-                <div class="leaf-divider">◆</div>
-
-                <strong style="color:#5a2d22">New Desi Tadka</strong><br>
-                Good Food Brings People Together<br>
-                <span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span>
+                <div class="leaf-divider">◆</div><strong style="color:#5a2d22">New Desi Tadka</strong><br>Good Food
+                Brings People Together<br><span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span>
             </div>
-
-            <div class="receipt-actions">
-                <button type="button" class="receipt-secondary" id="closeReceipt">
-                    ⌂ &nbsp; Back to Menu
-                </button>
-
-                <button type="button" id="printReceipt">
-                    Print Receipt
-                </button>
-            </div>
+            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">⌂ &nbsp; Back
+                    to Menu</button><button type="button" id="printReceipt">Print Receipt</button></div>
         </section>
     </div>
 
@@ -1179,21 +1114,27 @@
                 $("receiptFinalPaper").style.animation = "";
             }, 1600);
         });
-        $("closeReceipt").addEventListener("click", () => $("receiptOverlay").classList.remove("show"));
-        $("receiptOverlay").addEventListener("click", e => { if (e.target === $("receiptOverlay") && !$("receiptFinalPaper").classList.contains("hide")) $("receiptOverlay").classList.remove("show"); });
+        // Close the receipt only when the customer clicks "Back to Menu".
+        // Clicking the dark area outside the receipt must not dismiss it.
+        $("closeReceipt").addEventListener("click", () => {
+            $("receiptOverlay").classList.remove("show");
+        });
+
+        // Do not close the receipt when the overlay/background is clicked.
+        $("receiptOverlay").addEventListener("click", event => {
+            if (event.target === $("receiptOverlay")) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        // Keep clicks inside the receipt from bubbling to the overlay.
+        $("receiptFinalPaper").addEventListener("click", event => {
+            event.stopPropagation();
+        });
+
         $("printReceipt").addEventListener("click", () => window.print());
-        const receiptOverlay = document.getElementById("receiptOverlay");
-        const receiptPaper = document.getElementById("receiptFinalPaper");
 
-        // Prevent clicks inside the receipt from reaching the overlay.
-        receiptPaper.addEventListener("click", (event) => {
-            event.stopPropagation();
-        });
-
-        // Prevent clicking outside the receipt from closing it.
-        receiptOverlay.addEventListener("click", (event) => {
-            event.stopPropagation();
-        });
         // =====================================================
         // CATEGORY HOVER VIDEOS
         // =====================================================
