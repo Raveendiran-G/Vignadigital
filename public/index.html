@@ -1011,12 +1011,11 @@
             </header>
             <div class="receipt-meta" id="receiptMeta"></div>
             <div class="receipt-items" id="receiptItems"></div>
-            <div class="receipt-row">
+            <div class="receipt-summary-line">
                 <span>Food Subtotal</span>
                 <span id="receiptSubtotal">₹0.00</span>
             </div>
-
-            <div class="receipt-row">
+            <div class="receipt-summary-line">
                 <span>Tax (5%)</span>
                 <span id="receiptTax">₹0.00</span>
             </div>
@@ -1041,14 +1040,6 @@
         let D = [];
 
         const $ = id => document.getElementById(id);
-        const subtotal = cart.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0
-        );
-
-        const taxRate = 0.05;
-        const tax = subtotal * taxRate;
-        const total = subtotal + tax;
         const ORDER_RESTAURANT_NAME = "New Desi Tadka";
         const cart = new Map();
         const money = value => "₹" + Number(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -1098,10 +1089,13 @@
             const receiptItems = [...cart.values()];
             $("receiptItems").innerHTML = `<div class="receipt-table-head"><span>Item</span><span style="text-align:right">Qty</span><span style="text-align:right">Price</span><span style="text-align:right">Total</span></div>` + receiptItems.map(i => `<div class="receipt-row"><span>${escapeHtml(i.name)}</span><span class="receipt-qty">${i.qty}</span><span class="receipt-price">${money(i.price)}</span><strong class="receipt-line-total">${money(i.price * i.qty)}</strong></div>`).join("");
             const subtotal = cartTotal();
-            const deliveryCharge = type === "Delivery" ? 0 : 0;
+            const taxRate = 0.05;
+            const tax = Math.round(subtotal * taxRate * 100) / 100;
+            const deliveryCharge = 0; // Set this to your delivery fee if applicable.
+            const total = subtotal + tax + deliveryCharge;
             $("receiptSubtotal").textContent = money(subtotal);
-            $("receiptDelivery").textContent = money(deliveryCharge);
-            $("receiptTotal").textContent = money(subtotal + deliveryCharge);
+            $("receiptTax").textContent = money(tax);
+            $("receiptTotal").textContent = money(total);
             $("receiptOverlay").classList.add("show");
             $("receiptPrinterStage").classList.remove("hide");
             $("receiptFinalPaper").classList.add("hide");
