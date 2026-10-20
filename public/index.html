@@ -368,48 +368,579 @@
         }
 
         /* Ordering and cart */
-        .order-actions{display:flex;gap:7px;margin-top:8px}
-        .order-actions button{flex:1;border:0;border-radius:9px;padding:10px 7px;font-weight:700;font-size:13px;cursor:pointer}
-        .add-cart{background:#fff0e3;color:#8b3f13;border:1px solid #e8761f!important}
-        .order-now{background:#e8761f;color:#fff}
-        .cart-dock{position:fixed;left:12px;right:12px;bottom:12px;z-index:20;display:none;align-items:center;justify-content:space-between;gap:12px;background:#5a2d22;color:#fff;padding:13px 16px;border-radius:15px;box-shadow:0 8px 28px #0004}
-        .cart-dock.show{display:flex}.cart-dock small{display:block;opacity:.85;margin-top:3px}
-        .cart-dock button,.checkout-submit{border:0;border-radius:10px;padding:11px 15px;background:#e8761f;color:#fff;font-weight:800;cursor:pointer}
-        .checkout-overlay{position:fixed;inset:0;background:#0009;z-index:30;display:none;align-items:flex-end;justify-content:center;padding:12px}
-        .checkout-overlay.show{display:flex}.checkout-panel{width:min(100%,520px);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:0 10px 40px #0004}
-        .checkout-panel h2{color:#5a2d22;margin-bottom:12px}.checkout-panel label{display:block;font-weight:650;font-size:13px;margin:12px 0 5px}
-        .checkout-panel input,.checkout-panel textarea,.checkout-panel select{width:100%;border:1px solid #ddd;border-radius:9px;padding:12px;font:inherit;background:#fff}
-        .checkout-panel textarea{min-height:70px;resize:vertical}.cart-lines{border:1px solid #eee;border-radius:10px;padding:10px;margin:10px 0}
-        .cart-line{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee}.cart-line:last-child{border-bottom:0}
-        .cart-line-name{flex:1}.qty-controls{display:flex;align-items:center;gap:8px}.qty-controls button{width:28px;height:28px;border:0;border-radius:7px;background:#fdebdc;color:#5a2d22;font-weight:800}
-        .cart-total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin:12px 0;color:#5a2d22}.checkout-buttons{display:flex;gap:10px;margin-top:14px}.checkout-buttons button{flex:1}
-        .checkout-cancel{border:1px solid #ddd;border-radius:10px;padding:11px;background:#fff;font-weight:700}
-        @media(min-width:700px){.checkout-overlay{align-items:center}}
+        .order-actions {
+            display: flex;
+            gap: 7px;
+            margin-top: 8px
+        }
+
+        .order-actions button {
+            flex: 1;
+            border: 0;
+            border-radius: 9px;
+            padding: 10px 7px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer
+        }
+
+        .add-cart {
+            background: #fff0e3;
+            color: #8b3f13;
+            border: 1px solid #e8761f !important
+        }
+
+        .order-now {
+            background: #e8761f;
+            color: #fff
+        }
+
+        .cart-dock {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #5a2d22;
+            color: #fff;
+            padding: 13px 16px;
+            border-radius: 15px;
+            box-shadow: 0 8px 28px #0004
+        }
+
+        .cart-dock.show {
+            display: flex
+        }
+
+        .cart-dock small {
+            display: block;
+            opacity: .85;
+            margin-top: 3px
+        }
+
+        .cart-dock button,
+        .checkout-submit {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 15px;
+            background: #e8761f;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .checkout-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0009;
+            z-index: 30;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 12px
+        }
+
+        .checkout-overlay.show {
+            display: flex
+        }
+
+        .checkout-panel {
+            width: min(100%, 520px);
+            max-height: 92vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 40px #0004
+        }
+
+        .checkout-panel h2 {
+            color: #5a2d22;
+            margin-bottom: 12px
+        }
+
+        .checkout-panel label {
+            display: block;
+            font-weight: 650;
+            font-size: 13px;
+            margin: 12px 0 5px
+        }
+
+        .checkout-panel input,
+        .checkout-panel textarea,
+        .checkout-panel select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            padding: 12px;
+            font: inherit;
+            background: #fff
+        }
+
+        .checkout-panel textarea {
+            min-height: 70px;
+            resize: vertical
+        }
+
+        .cart-lines {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0
+        }
+
+        .cart-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee
+        }
+
+        .cart-line:last-child {
+            border-bottom: 0
+        }
+
+        .cart-line-name {
+            flex: 1
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .qty-controls button {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 7px;
+            background: #fdebdc;
+            color: #5a2d22;
+            font-weight: 800
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 800;
+            margin: 12px 0;
+            color: #5a2d22
+        }
+
+        .checkout-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        .checkout-buttons button {
+            flex: 1
+        }
+
+        .checkout-cancel {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 11px;
+            background: #fff;
+            font-weight: 700
+        }
+
+        @media(min-width:700px) {
+            .checkout-overlay {
+                align-items: center
+            }
+        }
 
         /* Animated thermal-paper order receipt */
-        .receipt-overlay{position:fixed;inset:0;z-index:50;background:rgba(20,12,8,.72);display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
-        .receipt-overlay.show{display:flex;animation:receiptFade .25s ease both}
-        .receipt-paper{position:relative;width:min(100%,360px);max-height:90%;overflow:auto;background:#fffdf7;color:#29241f;padding:22px 20px 25px;box-shadow:0 18px 55px #0007;font-family:Arial,Helvetica,sans-serif;transform-origin:top center;animation:receiptPrint .8s cubic-bezier(.2,.75,.25,1) both;clip-path:polygon(0 0,100% 0,100% 98%,96% 100%,92% 98%,88% 100%,84% 98%,80% 100%,76% 98%,72% 100%,68% 98%,64% 100%,60% 98%,56% 100%,52% 98%,48% 100%,44% 98%,40% 100%,36% 98%,32% 100%,28% 98%,24% 100%,20% 98%,16% 100%,12% 98%,8% 100%,4% 98%,0 100%)}
-        .receipt-paper:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:repeating-linear-gradient(90deg,#e7d9c9 0 7px,transparent 7px 11px)}
-        .receipt-head{text-align:center;border-bottom:1px dashed #9c8b7d;padding:5px 0 13px;margin-bottom:11px}.receipt-head .receipt-icon{display:block;width:62px;height:62px;object-fit:contain;margin:0 auto 3px}.receipt-head h2{font-size:20px;letter-spacing:-.5px;margin:4px 0;color:#5a2d22}.receipt-head p{font-size:10px;letter-spacing:1px;color:#5e4a3e;margin:3px 0}
-        .receipt-status{display:none!important}
-        .receipt-meta{font-size:10px;line-height:1.55;margin-bottom:12px}.receipt-meta .meta-line{display:grid;grid-template-columns:78px 8px minmax(0,1fr);gap:3px;padding:1px 0}.receipt-meta .meta-value{overflow-wrap:anywhere}
-        .receipt-items{border-top:1px dashed #9c8b7d;border-bottom:1px dashed #9c8b7d;padding:7px 0;margin:10px 0}.receipt-table-head,.receipt-row{display:grid;grid-template-columns:minmax(0,1fr) 28px 48px 48px;gap:4px;align-items:start;font-size:10px;padding:5px 0}.receipt-table-head{font-weight:800;border-bottom:1px solid #a99a8e;padding-bottom:7px}.receipt-row span{min-width:0;overflow-wrap:anywhere}.receipt-row .receipt-qty,.receipt-row .receipt-price,.receipt-row .receipt-line-total{text-align:right;white-space:nowrap}.receipt-summary{font-size:10px;line-height:1.7;padding:4px 0 8px;border-bottom:1px dashed #9c8b7d}.receipt-summary-line{display:flex;justify-content:space-between;gap:12px}.receipt-total{display:flex;justify-content:space-between;gap:12px;font-weight:900;font-size:13px;padding:8px 0 12px;border-bottom:1px dashed #9c8b7d}.receipt-foot{text-align:center;font-size:10px;line-height:1.6;color:#51463f;padding:12px 0 3px}.receipt-foot .thanks{font-weight:800;font-size:11px}.receipt-foot .leaf-divider{color:#537c38;font-size:18px;margin:4px 0}.receipt-actions{display:flex;gap:8px;margin-top:14px}.receipt-actions button{flex:1;min-height:40px;border:0;border-radius:7px;padding:9px;background:#5a2d22;color:#fff;font-weight:800;cursor:pointer;font-size:12px}.receipt-actions .receipt-secondary{background:#f3e9df;color:#5a2d22}
-        .receipt-printer-stage{width:min(100%,430px);text-align:center;color:#fff;animation:printerStageIn .45s ease both}
-        .printer-brand{font-weight:900;letter-spacing:2px;margin-bottom:14px}
-        .receipt-printing-paper{width:min(78%,310px);min-height:300px;margin:0 auto -14px;position:relative;z-index:2;padding:24px 18px 34px;background:#fffdf7;color:#5a2d22;box-shadow:0 12px 35px #0005;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;clip-path:polygon(0 0,100% 0,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%);animation:paperFeed 1.2s ease-in-out both}
-        .printing-logo img{display:block;width:54px;height:54px;object-fit:contain;margin:0 auto 6px}.receipt-printing-paper h2{font-size:19px;margin:7px 0}.receipt-printing-paper p{font-size:10px;margin-bottom:18px}.receipt-printing-paper hr{border:0;border-top:1px dashed #aaa;margin:15px 0}.printer-icon{font-size:42px;margin-top:18px;color:#302b27}
-        .printer-machine{height:90px;background:linear-gradient(#424242,#171717);border-radius:13px 13px 22px 22px;box-shadow:0 20px 35px #0008;margin:0 auto;width:min(100%,370px);padding-top:15px;position:relative;color:#d6b48c;font-size:11px;letter-spacing:2px}
-        .printer-machine span{display:block;width:42px;height:6px;border-radius:8px;background:#ffb02e;box-shadow:0 0 12px #ffb02e;margin:0 auto 18px}
-        .receipt-paper.hide{display:none!important}.receipt-paper{animation:receiptPrint .75s cubic-bezier(.2,.75,.25,1) both}
-        @keyframes receiptFade{from{opacity:0}to{opacity:1}}
-        @keyframes receiptPrint{0%{opacity:0;transform:translateY(-70px) scaleY(.15)}60%{opacity:1;transform:translateY(5px) scaleY(1.03)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
-        @keyframes printerStageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes paperFeed{0%{transform:translateY(-45px);opacity:.25}65%{transform:translateY(4px);opacity:1}100%{transform:translateY(0);opacity:1}}
-        @media print{body *{visibility:hidden!important}#receiptFinalPaper,#receiptFinalPaper *{visibility:visible!important}#receiptFinalPaper{display:block!important;position:absolute;left:0;top:0;width:100%;max-height:none;overflow:visible;box-shadow:none;animation:none}.receipt-actions{display:none!important}.receipt-overlay{position:absolute;background:white;display:block!important;padding:0}}
-        @media(prefers-reduced-motion:reduce){.receipt-overlay.show,.receipt-paper,.receipt-printing-paper,.receipt-printer-stage{animation:none}}
+        .receipt-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(20, 12, 8, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow: auto
+        }
 
+        .receipt-overlay.show {
+            display: flex;
+            animation: receiptFade .25s ease both
+        }
 
+        .receipt-paper {
+            position: relative;
+            width: min(100%, 360px);
+            max-height: 90%;
+            overflow: auto;
+            background: #fffdf7;
+            color: #29241f;
+            padding: 22px 20px 25px;
+            box-shadow: 0 18px 55px #0007;
+            font-family: Arial, Helvetica, sans-serif;
+            transform-origin: top center;
+            animation: receiptPrint .8s cubic-bezier(.2, .75, .25, 1) both;
+            clip-path: polygon(0 0, 100% 0, 100% 98%, 96% 100%, 92% 98%, 88% 100%, 84% 98%, 80% 100%, 76% 98%, 72% 100%, 68% 98%, 64% 100%, 60% 98%, 56% 100%, 52% 98%, 48% 100%, 44% 98%, 40% 100%, 36% 98%, 32% 100%, 28% 98%, 24% 100%, 20% 98%, 16% 100%, 12% 98%, 8% 100%, 4% 98%, 0 100%)
+        }
+
+        .receipt-paper:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, #e7d9c9 0 7px, transparent 7px 11px)
+        }
+
+        .receipt-head {
+            text-align: center;
+            border-bottom: 1px dashed #9c8b7d;
+            padding: 5px 0 13px;
+            margin-bottom: 11px
+        }
+
+        .receipt-head .receipt-icon {
+            display: block;
+            width: 62px;
+            height: 62px;
+            object-fit: contain;
+            margin: 0 auto 3px
+        }
+
+        .receipt-head h2 {
+            font-size: 20px;
+            letter-spacing: -.5px;
+            margin: 4px 0;
+            color: #5a2d22
+        }
+
+        .receipt-head p {
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #5e4a3e;
+            margin: 3px 0
+        }
+
+        .receipt-status {
+            display: none !important
+        }
+
+        .receipt-meta {
+            font-size: 10px;
+            line-height: 1.55;
+            margin-bottom: 12px
+        }
+
+        .receipt-meta .meta-line {
+            display: grid;
+            grid-template-columns: 78px 8px minmax(0, 1fr);
+            gap: 3px;
+            padding: 1px 0
+        }
+
+        .receipt-meta .meta-value {
+            overflow-wrap: anywhere
+        }
+
+        .receipt-items {
+            border-top: 1px dashed #9c8b7d;
+            border-bottom: 1px dashed #9c8b7d;
+            padding: 7px 0;
+            margin: 10px 0
+        }
+
+        .receipt-table-head,
+        .receipt-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 28px 48px 48px;
+            gap: 4px;
+            align-items: start;
+            font-size: 10px;
+            padding: 5px 0
+        }
+
+        .receipt-table-head {
+            font-weight: 800;
+            border-bottom: 1px solid #a99a8e;
+            padding-bottom: 7px
+        }
+
+        .receipt-row span {
+            min-width: 0;
+            overflow-wrap: anywhere
+        }
+
+        .receipt-row .receipt-qty,
+        .receipt-row .receipt-price,
+        .receipt-row .receipt-line-total {
+            text-align: right;
+            white-space: nowrap
+        }
+
+        .receipt-summary {
+            font-size: 10px;
+            line-height: 1.7;
+            padding: 4px 0 8px;
+            border-bottom: 1px dashed #9c8b7d
+        }
+
+        .receipt-summary-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px
+        }
+
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 900;
+            font-size: 13px;
+            padding: 8px 0 12px;
+            border-bottom: 1px dashed #9c8b7d
+        }
+
+        .receipt-foot {
+            text-align: center;
+            font-size: 10px;
+            line-height: 1.6;
+            color: #51463f;
+            padding: 12px 0 3px
+        }
+
+        .receipt-foot .thanks {
+            font-weight: 800;
+            font-size: 11px
+        }
+
+        .receipt-foot .leaf-divider {
+            color: #537c38;
+            font-size: 18px;
+            margin: 4px 0
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px
+        }
+
+        .receipt-actions button {
+            flex: 1;
+            min-height: 40px;
+            border: 0;
+            border-radius: 7px;
+            padding: 9px;
+            background: #5a2d22;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 12px
+        }
+
+        .receipt-actions .receipt-secondary {
+            background: #f3e9df;
+            color: #5a2d22
+        }
+
+        .receipt-printer-stage {
+            width: min(100%, 430px);
+            text-align: center;
+            color: #fff;
+            animation: printerStageIn .45s ease both
+        }
+
+        .printer-brand {
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 14px
+        }
+
+        .receipt-printing-paper {
+            width: min(78%, 310px);
+            min-height: 300px;
+            margin: 0 auto -14px;
+            position: relative;
+            z-index: 2;
+            padding: 24px 18px 34px;
+            background: #fffdf7;
+            color: #5a2d22;
+            box-shadow: 0 12px 35px #0005;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            clip-path: polygon(0 0, 100% 0, 100% 98%, 95% 100%, 90% 98%, 85% 100%, 80% 98%, 75% 100%, 70% 98%, 65% 100%, 60% 98%, 55% 100%, 50% 98%, 45% 100%, 40% 98%, 35% 100%, 30% 98%, 25% 100%, 20% 98%, 15% 100%, 10% 98%, 5% 100%, 0 98%);
+            animation: paperFeed 1.2s ease-in-out both
+        }
+
+        .printing-logo img {
+            display: block;
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+            margin: 0 auto 6px
+        }
+
+        .receipt-printing-paper h2 {
+            font-size: 19px;
+            margin: 7px 0
+        }
+
+        .receipt-printing-paper p {
+            font-size: 10px;
+            margin-bottom: 18px
+        }
+
+        .receipt-printing-paper hr {
+            border: 0;
+            border-top: 1px dashed #aaa;
+            margin: 15px 0
+        }
+
+        .printer-icon {
+            font-size: 42px;
+            margin-top: 18px;
+            color: #302b27
+        }
+
+        .printer-machine {
+            height: 90px;
+            background: linear-gradient(#424242, #171717);
+            border-radius: 13px 13px 22px 22px;
+            box-shadow: 0 20px 35px #0008;
+            margin: 0 auto;
+            width: min(100%, 370px);
+            padding-top: 15px;
+            position: relative;
+            color: #d6b48c;
+            font-size: 11px;
+            letter-spacing: 2px
+        }
+
+        .printer-machine span {
+            display: block;
+            width: 42px;
+            height: 6px;
+            border-radius: 8px;
+            background: #ffb02e;
+            box-shadow: 0 0 12px #ffb02e;
+            margin: 0 auto 18px
+        }
+
+        .receipt-paper.hide {
+            display: none !important
+        }
+
+        .receipt-paper {
+            animation: receiptPrint .75s cubic-bezier(.2, .75, .25, 1) both
+        }
+
+        @keyframes receiptFade {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes receiptPrint {
+            0% {
+                opacity: 0;
+                transform: translateY(-70px) scaleY(.15)
+            }
+
+            60% {
+                opacity: 1;
+                transform: translateY(5px) scaleY(1.03)
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scaleY(1)
+            }
+        }
+
+        @keyframes printerStageIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes paperFeed {
+            0% {
+                transform: translateY(-45px);
+                opacity: .25
+            }
+
+            65% {
+                transform: translateY(4px);
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        @media print {
+            body * {
+                visibility: hidden !important
+            }
+
+            #receiptFinalPaper,
+            #receiptFinalPaper * {
+                visibility: visible !important
+            }
+
+            #receiptFinalPaper {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-height: none;
+                overflow: visible;
+                box-shadow: none;
+                animation: none
+            }
+
+            .receipt-actions {
+                display: none !important
+            }
+
+            .receipt-overlay {
+                position: absolute;
+                background: white;
+                display: block !important;
+                padding: 0
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .receipt-overlay.show,
+            .receipt-paper,
+            .receipt-printing-paper,
+            .receipt-printer-stage {
+                animation: none
+            }
+        }
     </style>
 </head>
 
@@ -432,36 +963,76 @@
             <div id="cartLines" class="cart-lines"></div>
             <div class="cart-total"><span>Total</span><span id="checkoutTotal">₹0</span></div>
             <form id="checkoutForm">
-                <label for="customerName">Your name *</label><input id="customerName" name="name" required maxlength="80" autocomplete="name" placeholder="Enter your name">
-                <label for="customerPhone">Mobile number *</label><input id="customerPhone" name="phone" required type="tel" inputmode="tel" pattern="[0-9+() -]{8,18}" maxlength="18" autocomplete="tel" placeholder="Your contact number">
-                <label for="orderType">Order type *</label><select id="orderType" name="orderType"><option value="Takeaway">Takeaway</option><option value="Delivery">Delivery</option><option value="Dine-in">Dine-in</option></select>
-                <label for="customerAddress">Address / table number</label><textarea id="customerAddress" name="address" maxlength="300" placeholder="Required for delivery; otherwise optional"></textarea>
-                <label for="orderNotes">Special instructions</label><textarea id="orderNotes" name="notes" maxlength="300" placeholder="Optional"></textarea>
-                <div class="checkout-buttons"><button class="checkout-cancel" type="button" id="closeCheckout">Continue shopping</button><button class="checkout-submit" type="submit">Confirm Order</button></div>
-                <p style="font-size:12px;color:#666;margin-top:10px">Confirm to generate your animated order receipt.</p>
+                <label for="customerName">Your name *</label><input id="customerName" name="name" required
+                    maxlength="80" autocomplete="name" placeholder="Enter your name">
+                <label for="customerPhone">Mobile number *</label><input id="customerPhone" name="phone" required
+                    type="tel" inputmode="tel" pattern="[0-9+() -]{8,18}" maxlength="18" autocomplete="tel"
+                    placeholder="Your contact number">
+                <label for="orderType">Order type *</label><select id="orderType" name="orderType">
+                    <option value="Takeaway">Takeaway</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Dine-in">Dine-in</option>
+                </select>
+                <label for="customerAddress">Address / table number</label><textarea id="customerAddress" name="address"
+                    maxlength="300" placeholder="Required for delivery; otherwise optional"></textarea>
+                <label for="orderNotes">Special instructions</label><textarea id="orderNotes" name="notes"
+                    maxlength="300" placeholder="Optional"></textarea>
+                <div class="checkout-buttons"><button class="checkout-cancel" type="button" id="closeCheckout">Continue
+                        shopping</button><button class="checkout-submit" type="submit">Confirm Order</button></div>
+                <p style="font-size:12px;color:#666;margin-top:10px">Confirm to generate your animated order receipt.
+                </p>
             </form>
         </section>
     </div>
 
 
-    <div class="receipt-overlay" id="receiptOverlay" role="dialog" aria-modal="true" aria-labelledby="receiptTitle" aria-live="polite">
+    <div class="receipt-overlay" id="receiptOverlay" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"
+        aria-live="polite">
         <section class="receipt-printer-stage" id="receiptPrinterStage" aria-label="Printing receipt animation">
             <div class="printer-brand">NEW DESI TADKA</div>
-            <div class="receipt-printing-paper"><div class="printing-logo"><img src="/images/logo.png" alt="New Desi Tadka logo"></div><h2>NEW DESI TADKA</h2><p>FROM FARM TO TABLE · 100% VEG</p><hr><strong>Preparing your bill...</strong><div class="printer-icon">▤</div></div>
+            <div class="receipt-printing-paper">
+                <div class="printing-logo"><img src="/images/logo.png" alt="New Desi Tadka logo"></div>
+                <h2>NEW DESI TADKA</h2>
+                <p>FROM FARM TO TABLE · 100% VEG</p>
+                <hr><strong>Preparing your bill...</strong>
+                <div class="printer-icon">▤</div>
+            </div>
             <div class="printer-machine"><span></span><b>THERMAL RECEIPT PRINTER</b></div>
         </section>
         <section class="receipt-paper hide" id="receiptFinalPaper">
             <header class="receipt-head">
                 <img class="receipt-icon" src="/images/logo.png" alt="New Desi Tadka brand logo">
-                <h2 id="receiptTitle">New Desi Tadka</h2><p>FROM FARM TO TABLE</p><p>100% VEG</p>
-                <p style="border-top:1px dashed #9c8b7d;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800;letter-spacing:.5px">ORDER RECEIPT</p>
+                <h2 id="receiptTitle">New Desi Tadka</h2>
+                <p>FROM FARM TO TABLE</p>
+                <p>100% VEG</p>
+                <p
+                    style="border-top:1px dashed #9c8b7d;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800;letter-spacing:.5px">
+                    ORDER RECEIPT</p>
             </header>
             <div class="receipt-meta" id="receiptMeta"></div>
             <div class="receipt-items" id="receiptItems"></div>
-            <div class="receipt-summary"><div class="receipt-summary-line"><span>Subtotal</span><strong id="receiptSubtotal">₹0</strong></div><div class="receipt-summary-line"><span>Delivery Charge</span><strong id="receiptDelivery">₹0</strong></div></div>
-            <div class="receipt-total"><span>Total Amount</span><span id="receiptTotal">₹0</span></div>
-            <div class="receipt-foot"><div class="thanks">Thank you for ordering!</div><div>We will confirm your order shortly.</div><div class="leaf-divider">◆</div><strong style="color:#5a2d22">New Desi Tadka</strong><br>Good Food Brings People Together<br><span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span></div>
-            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">⌂ &nbsp; Back to Menu</button><button type="button" id="printReceipt">Print Receipt</button></div>
+            <div class="receipt-row">
+                <span>Food Subtotal</span>
+                <span id="receiptSubtotal">₹0.00</span>
+            </div>
+
+            <div class="receipt-row">
+                <span>Tax (5%)</span>
+                <span id="receiptTax">₹0.00</span>
+            </div>
+
+            <div class="receipt-row receipt-total">
+                <span>Total</span>
+                <span id="receiptTotal">₹0.00</span>
+            </div>
+            <div class="receipt-foot">
+                <div class="thanks">Thank you for ordering!</div>
+                <div>We will confirm your order shortly.</div>
+                <div class="leaf-divider">◆</div><strong style="color:#5a2d22">New Desi Tadka</strong><br>Good Food
+                Brings People Together<br><span style="letter-spacing:5px;color:#5a2d22">♥ ♥ ♥</span>
+            </div>
+            <div class="receipt-actions"><button type="button" class="receipt-secondary" id="closeReceipt">⌂ &nbsp; Back
+                    to Menu</button><button type="button" id="printReceipt">Print Receipt</button></div>
         </section>
     </div>
 
@@ -470,76 +1041,83 @@
         let D = [];
 
         const $ = id => document.getElementById(id);
+        const subtotal = cart.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+        );
 
+        const taxRate = 0.05;
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax;
         const ORDER_RESTAURANT_NAME = "New Desi Tadka";
         const cart = new Map();
-        const money = value => "₹" + Number(value || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
-        function cartCount(){ let n=0; for(const x of cart.values()) n+=x.qty; return n; }
-        function cartTotal(){ let n=0; for(const x of cart.values()) n+=x.price*x.qty; return n; }
-        function addToCart(name, price, category, quantity=1){
-            const key=category+"|"+name; const existing=cart.get(key);
-            if(existing) existing.qty+=quantity; else cart.set(key,{name,price:Number(price)||0,category,qty:quantity});
+        const money = value => "₹" + Number(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+        function cartCount() { let n = 0; for (const x of cart.values()) n += x.qty; return n; }
+        function cartTotal() { let n = 0; for (const x of cart.values()) n += x.price * x.qty; return n; }
+        function addToCart(name, price, category, quantity = 1) {
+            const key = category + "|" + name; const existing = cart.get(key);
+            if (existing) existing.qty += quantity; else cart.set(key, { name, price: Number(price) || 0, category, qty: quantity });
             renderCart();
         }
-        function changeQty(key, delta){ const item=cart.get(key); if(!item)return; item.qty+=delta; if(item.qty<=0)cart.delete(key); renderCart(); }
-        function renderCart(){
-            const dock=$("cartDock"); dock.classList.toggle("show",cart.size>0);
-            $("cartSummary").textContent=`${cartCount()} item${cartCount()===1?"":"s"} · ${money(cartTotal())}`;
-            $("cartLines").innerHTML=cart.size ? [...cart.entries()].map(([key,item])=>`<div class="cart-line"><div class="cart-line-name"><strong>${escapeHtml(item.name)}</strong><br><small>${money(item.price)} each</small></div><div class="qty-controls"><button type="button" data-qty="-1" data-key="${escapeHtml(key)}" aria-label="Decrease quantity">−</button><strong>${item.qty}</strong><button type="button" data-qty="1" data-key="${escapeHtml(key)}" aria-label="Increase quantity">+</button></div><strong>${money(item.price*item.qty)}</strong></div>`).join("") : "Your cart is empty.";
-            $("checkoutTotal").textContent=money(cartTotal());
+        function changeQty(key, delta) { const item = cart.get(key); if (!item) return; item.qty += delta; if (item.qty <= 0) cart.delete(key); renderCart(); }
+        function renderCart() {
+            const dock = $("cartDock"); dock.classList.toggle("show", cart.size > 0);
+            $("cartSummary").textContent = `${cartCount()} item${cartCount() === 1 ? "" : "s"} · ${money(cartTotal())}`;
+            $("cartLines").innerHTML = cart.size ? [...cart.entries()].map(([key, item]) => `<div class="cart-line"><div class="cart-line-name"><strong>${escapeHtml(item.name)}</strong><br><small>${money(item.price)} each</small></div><div class="qty-controls"><button type="button" data-qty="-1" data-key="${escapeHtml(key)}" aria-label="Decrease quantity">−</button><strong>${item.qty}</strong><button type="button" data-qty="1" data-key="${escapeHtml(key)}" aria-label="Increase quantity">+</button></div><strong>${money(item.price * item.qty)}</strong></div>`).join("") : "Your cart is empty.";
+            $("checkoutTotal").textContent = money(cartTotal());
         }
-        function showCheckout(){ if(!cart.size){alert("Please add an item to your cart first.");return;} $("checkoutOverlay").classList.add("show"); renderCart(); }
-        $("openCheckout").addEventListener("click",showCheckout);
-        $("closeCheckout").addEventListener("click",()=>$("checkoutOverlay").classList.remove("show"));
-        $("checkoutOverlay").addEventListener("click",e=>{if(e.target===$("checkoutOverlay"))$("checkoutOverlay").classList.remove("show");});
-        document.addEventListener("click",e=>{
-            const add=e.target.closest("[data-add-cart]");
-            if(add){addToCart(add.dataset.addCart,add.dataset.price,add.dataset.category);return;}
-            const order=e.target.closest("[data-order-now]");
-            if(order){addToCart(order.dataset.orderNow,order.dataset.price,order.dataset.category);showCheckout();return;}
-            const qty=e.target.closest("[data-qty]");
-            if(qty)changeQty(qty.dataset.key,Number(qty.dataset.qty));
+        function showCheckout() { if (!cart.size) { alert("Please add an item to your cart first."); return; } $("checkoutOverlay").classList.add("show"); renderCart(); }
+        $("openCheckout").addEventListener("click", showCheckout);
+        $("closeCheckout").addEventListener("click", () => $("checkoutOverlay").classList.remove("show"));
+        $("checkoutOverlay").addEventListener("click", e => { if (e.target === $("checkoutOverlay")) $("checkoutOverlay").classList.remove("show"); });
+        document.addEventListener("click", e => {
+            const add = e.target.closest("[data-add-cart]");
+            if (add) { addToCart(add.dataset.addCart, add.dataset.price, add.dataset.category); return; }
+            const order = e.target.closest("[data-order-now]");
+            if (order) { addToCart(order.dataset.orderNow, order.dataset.price, order.dataset.category); showCheckout(); return; }
+            const qty = e.target.closest("[data-qty]");
+            if (qty) changeQty(qty.dataset.key, Number(qty.dataset.qty));
         });
-        $("checkoutForm").addEventListener("submit",e=>{
-            e.preventDefault(); if(!cart.size)return;
-            const name=$("customerName").value.trim(), phone=$("customerPhone").value.trim();
-            const type=$("orderType").value, address=$("customerAddress").value.trim(), notes=$("orderNotes").value.trim();
-            if(!name){$("customerName").focus();return;}
-            if(!/^[0-9+() -]{8,18}$/.test(phone)){alert("Please enter a valid mobile number.");$("customerPhone").focus();return;}
-            if(type==="Delivery"&&!address){alert("Please enter the delivery address.");$("customerAddress").focus();return;}
-            const orderNumber="NDT-"+Date.now().toString().slice(-8);
-            const stamp=new Date().toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});
-            $("receiptMeta").innerHTML=`
+        $("checkoutForm").addEventListener("submit", e => {
+            e.preventDefault(); if (!cart.size) return;
+            const name = $("customerName").value.trim(), phone = $("customerPhone").value.trim();
+            const type = $("orderType").value, address = $("customerAddress").value.trim(), notes = $("orderNotes").value.trim();
+            if (!name) { $("customerName").focus(); return; }
+            if (!/^[0-9+() -]{8,18}$/.test(phone)) { alert("Please enter a valid mobile number."); $("customerPhone").focus(); return; }
+            if (type === "Delivery" && !address) { alert("Please enter the delivery address."); $("customerAddress").focus(); return; }
+            const orderNumber = "NDT-" + Date.now().toString().slice(-8);
+            const stamp = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+            $("receiptMeta").innerHTML = `
               <div class="meta-line"><span>Order No</span><span>:</span><span class="meta-value"><strong>${orderNumber}</strong></span></div>
               <div class="meta-line"><span>Date</span><span>:</span><span class="meta-value">${escapeHtml(stamp)}</span></div>
               <div class="meta-line"><span>Customer</span><span>:</span><span class="meta-value">${escapeHtml(name)}</span></div>
               <div class="meta-line"><span>Phone</span><span>:</span><span class="meta-value">${escapeHtml(phone)}</span></div>
               <div class="meta-line"><span>Order Type</span><span>:</span><span class="meta-value">${escapeHtml(type)}</span></div>
-              ${address?`<div class="meta-line"><span>Address</span><span>:</span><span class="meta-value">${escapeHtml(address)}</span></div>`:""}
-              ${notes?`<div class="meta-line"><span>Instructions</span><span>:</span><span class="meta-value">${escapeHtml(notes)}</span></div>`:""}`;
-            const receiptItems=[...cart.values()];
-            $("receiptItems").innerHTML=`<div class="receipt-table-head"><span>Item</span><span style="text-align:right">Qty</span><span style="text-align:right">Price</span><span style="text-align:right">Total</span></div>`+receiptItems.map(i=>`<div class="receipt-row"><span>${escapeHtml(i.name)}</span><span class="receipt-qty">${i.qty}</span><span class="receipt-price">${money(i.price)}</span><strong class="receipt-line-total">${money(i.price*i.qty)}</strong></div>`).join("");
-            const subtotal=cartTotal();
-            const deliveryCharge=type==="Delivery"?0:0;
-            $("receiptSubtotal").textContent=money(subtotal);
-            $("receiptDelivery").textContent=money(deliveryCharge);
-            $("receiptTotal").textContent=money(subtotal+deliveryCharge);
+              ${address ? `<div class="meta-line"><span>Address</span><span>:</span><span class="meta-value">${escapeHtml(address)}</span></div>` : ""}
+              ${notes ? `<div class="meta-line"><span>Instructions</span><span>:</span><span class="meta-value">${escapeHtml(notes)}</span></div>` : ""}`;
+            const receiptItems = [...cart.values()];
+            $("receiptItems").innerHTML = `<div class="receipt-table-head"><span>Item</span><span style="text-align:right">Qty</span><span style="text-align:right">Price</span><span style="text-align:right">Total</span></div>` + receiptItems.map(i => `<div class="receipt-row"><span>${escapeHtml(i.name)}</span><span class="receipt-qty">${i.qty}</span><span class="receipt-price">${money(i.price)}</span><strong class="receipt-line-total">${money(i.price * i.qty)}</strong></div>`).join("");
+            const subtotal = cartTotal();
+            const deliveryCharge = type === "Delivery" ? 0 : 0;
+            $("receiptSubtotal").textContent = money(subtotal);
+            $("receiptDelivery").textContent = money(deliveryCharge);
+            $("receiptTotal").textContent = money(subtotal + deliveryCharge);
             $("receiptOverlay").classList.add("show");
             $("receiptPrinterStage").classList.remove("hide");
             $("receiptFinalPaper").classList.add("hide");
             $("checkoutOverlay").classList.remove("show");
             // Screen 3: CSS thermal-printer animation; Screen 4: final bill.
-            window.setTimeout(()=>{
+            window.setTimeout(() => {
                 $("receiptPrinterStage").classList.add("hide");
                 $("receiptFinalPaper").classList.remove("hide");
-                $("receiptFinalPaper").style.animation="none";
+                $("receiptFinalPaper").style.animation = "none";
                 void $("receiptFinalPaper").offsetWidth;
-                $("receiptFinalPaper").style.animation="";
-            },1600);
+                $("receiptFinalPaper").style.animation = "";
+            }, 1600);
         });
-        $("closeReceipt").addEventListener("click",()=>$("receiptOverlay").classList.remove("show"));
-        $("receiptOverlay").addEventListener("click",e=>{if(e.target===$("receiptOverlay") && !$("receiptFinalPaper").classList.contains("hide"))$("receiptOverlay").classList.remove("show");});
-        $("printReceipt").addEventListener("click",()=>window.print());
+        $("closeReceipt").addEventListener("click", () => $("receiptOverlay").classList.remove("show"));
+        $("receiptOverlay").addEventListener("click", e => { if (e.target === $("receiptOverlay") && !$("receiptFinalPaper").classList.contains("hide")) $("receiptOverlay").classList.remove("show"); });
+        $("printReceipt").addEventListener("click", () => window.print());
 
         // =====================================================
         // CATEGORY HOVER VIDEOS
@@ -721,8 +1299,8 @@
                 <div class="nm"><i class="v" aria-hidden="true"></i><span>${escapeHtml(item.n)}</span></div>
                 <div class="pr">₹${escapeHtml(item.p)}</div>
                 <div class="order-actions">
-                    <button type="button" class="add-cart" data-add-cart="${escapeHtml(item.n)}" data-price="${Number(item.p)||0}" data-category="${escapeHtml(subcategory.n)}">+ Add</button>
-                    <button type="button" class="order-now" data-order-now="${escapeHtml(item.n)}" data-price="${Number(item.p)||0}" data-category="${escapeHtml(subcategory.n)}">Order Now</button>
+                    <button type="button" class="add-cart" data-add-cart="${escapeHtml(item.n)}" data-price="${Number(item.p) || 0}" data-category="${escapeHtml(subcategory.n)}">+ Add</button>
+                    <button type="button" class="order-now" data-order-now="${escapeHtml(item.n)}" data-price="${Number(item.p) || 0}" data-category="${escapeHtml(subcategory.n)}">Order Now</button>
                 </div>
             </div>
         </div>`;
@@ -1026,103 +1604,103 @@
 
             setupProductVideoHover();
         };
-// =====================================================
-// LOAD MENU
-// =====================================================
+        // =====================================================
+        // LOAD MENU
+        // =====================================================
 
-async function loadMenu() {
-    let hasCachedMenu = false;
+        async function loadMenu() {
+            let hasCachedMenu = false;
 
-    // 1. Display cached menu immediately.
-    try {
-        const cached = localStorage.getItem("desiTadkaMenu");
+            // 1. Display cached menu immediately.
+            try {
+                const cached = localStorage.getItem("desiTadkaMenu");
 
-        if (cached) {
-            const products = JSON.parse(cached);
-            const cachedData = convertProducts(products);
+                if (cached) {
+                    const products = JSON.parse(cached);
+                    const cachedData = convertProducts(products);
 
-            if (cachedData.length > 0) {
-                D = cachedData;
-                hasCachedMenu = true;
+                    if (cachedData.length > 0) {
+                        D = cachedData;
+                        hasCachedMenu = true;
 
-                // Display the cached menu immediately.
-                if (cur === null) {
-                    goHome();
+                        // Display the cached menu immediately.
+                        if (cur === null) {
+                            goHome();
+                        }
+                    }
                 }
+            } catch (error) {
+                console.warn("Could not load cached menu:", error);
             }
-        }
-    } catch (error) {
-        console.warn("Could not load cached menu:", error);
-    }
 
-    // 2. Show loading state when no cached menu exists.
-    if (!hasCachedMenu && D.length === 0) {
-        home();
-    }
-
-    // 3. Fetch the latest menu from the server.
-    try {
-        const response = await fetch("/api/menu", {
-            method: "GET",
-            headers: {
-                Accept: "application/json"
+            // 2. Show loading state when no cached menu exists.
+            if (!hasCachedMenu && D.length === 0) {
+                home();
             }
-        });
 
-        if (!response.ok) {
-            throw new Error(
-                `Menu API returned HTTP ${response.status}`
-            );
-        }
+            // 3. Fetch the latest menu from the server.
+            try {
+                const response = await fetch("/api/menu", {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json"
+                    }
+                });
 
-        const products = await response.json();
+                if (!response.ok) {
+                    throw new Error(
+                        `Menu API returned HTTP ${response.status}`
+                    );
+                }
 
-        if (!Array.isArray(products) || products.length === 0) {
-            throw new Error("Menu API returned no products");
-        }
+                const products = await response.json();
 
-        const latestData = convertProducts(products);
+                if (!Array.isArray(products) || products.length === 0) {
+                    throw new Error("Menu API returned no products");
+                }
 
-        if (!latestData.length) {
-            throw new Error("Could not convert menu products");
-        }
+                const latestData = convertProducts(products);
 
-        // 4. Update the cache only if the data changed.
-        const latestJSON = JSON.stringify(products);
-        const cachedJSON = localStorage.getItem("desiTadkaMenu");
+                if (!latestData.length) {
+                    throw new Error("Could not convert menu products");
+                }
 
-        if (latestJSON !== cachedJSON) {
-            localStorage.setItem("desiTadkaMenu", latestJSON);
+                // 4. Update the cache only if the data changed.
+                const latestJSON = JSON.stringify(products);
+                const cachedJSON = localStorage.getItem("desiTadkaMenu");
 
-            D = latestData;
+                if (latestJSON !== cachedJSON) {
+                    localStorage.setItem("desiTadkaMenu", latestJSON);
 
-            // Refresh the screen only when the user is on home.
-            if (cur === null) {
-                goHome();
-            }
-        }
+                    D = latestData;
 
-        console.log(
-            "Menu loaded successfully:",
-            products.length,
-            "products"
-        );
+                    // Refresh the screen only when the user is on home.
+                    if (cur === null) {
+                        goHome();
+                    }
+                }
 
-    } catch (error) {
-        console.error("Menu loading error:", error);
+                console.log(
+                    "Menu loaded successfully:",
+                    products.length,
+                    "products"
+                );
 
-        // Keep the cached menu visible if available.
-        if (hasCachedMenu || D.length > 0) {
-            console.warn(
-                "Using previously cached menu because the API failed."
-            );
-            return;
-        }
+            } catch (error) {
+                console.error("Menu loading error:", error);
 
-        // Display an error message when no menu is available.
-        const output = $("out");
+                // Keep the cached menu visible if available.
+                if (hasCachedMenu || D.length > 0) {
+                    console.warn(
+                        "Using previously cached menu because the API failed."
+                    );
+                    return;
+                }
 
-        output.innerHTML = `
+                // Display an error message when no menu is available.
+                const output = $("out");
+
+                output.innerHTML = `
             <h1>Menu</h1>
 
             <div class="menu-message error">
@@ -1138,9 +1716,9 @@ async function loadMenu() {
             </div>
         `;
 
-        $("retryMenu").onclick = loadMenu;
-    }
-}
+                $("retryMenu").onclick = loadMenu;
+            }
+        }
 
 
         // Start once, after every function used by loadMenu has been defined.
