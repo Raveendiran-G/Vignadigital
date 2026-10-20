@@ -689,8 +689,8 @@
         .receipt-summary {
             font-size: 10px;
             line-height: 1.7;
-            padding: 4px 0 8px;
-            border-bottom: 1px dashed #9c8b7d
+            padding: 4px 0 2px;
+            border-bottom: 0
         }
 
         .receipt-summary-line {
@@ -706,12 +706,20 @@
 
         .receipt-total {
             display: flex;
+            align-items: baseline;
             justify-content: space-between;
             gap: 12px;
+            width: 100%;
             font-weight: 900;
             font-size: 13px;
-            padding: 8px 0 12px;
-            border-bottom: 1px dashed #9c8b7d
+            padding: 8px 0 4px;
+            border-bottom: 0
+        }
+
+        .receipt-total span:last-child {
+            text-align: right;
+            white-space: nowrap;
+            margin-left: auto
         }
 
         .receipt-foot {
@@ -1026,7 +1034,7 @@
             </div>
 
             
-            <div class="receipt-row receipt-total">
+            <div class="receipt-total">
                 <span>Total</span>
                 <span id="receiptTotal">₹0.00</span>
             </div>
