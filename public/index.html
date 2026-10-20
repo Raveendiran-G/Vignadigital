@@ -398,7 +398,7 @@
         .receipt-printer-stage{width:min(100%,430px);text-align:center;color:#fff;animation:printerStageIn .45s ease both}
         .printer-brand{font-weight:900;letter-spacing:2px;margin-bottom:14px}
         .receipt-printing-paper{width:min(78%,310px);min-height:300px;margin:0 auto -14px;position:relative;z-index:2;padding:24px 18px 34px;background:#fffdf7;color:#5a2d22;box-shadow:0 12px 35px #0005;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;clip-path:polygon(0 0,100% 0,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%);animation:paperFeed 1.2s ease-in-out both}
-        .printing-logo{font-size:34px}.receipt-printing-paper h2{font-size:19px;margin:7px 0}.receipt-printing-paper p{font-size:10px;margin-bottom:18px}.receipt-printing-paper hr{border:0;border-top:1px dashed #aaa;margin:15px 0}.printer-icon{font-size:42px;margin-top:18px;color:#302b27}
+        .printing-logo{display:block;width:64px;height:64px;object-fit:contain;margin:0 auto 8px}.receipt-printing-paper h2{font-size:19px;margin:7px 0}.receipt-printing-paper p{font-size:10px;margin-bottom:18px}.receipt-printing-paper hr{border:0;border-top:1px dashed #aaa;margin:15px 0}.printer-icon{font-size:42px;margin-top:18px;color:#302b27}
         .printer-machine{height:90px;background:linear-gradient(#424242,#171717);border-radius:13px 13px 22px 22px;box-shadow:0 20px 35px #0008;margin:0 auto;width:min(100%,370px);padding-top:15px;position:relative;color:#d6b48c;font-size:11px;letter-spacing:2px}
         .printer-machine span{display:block;width:42px;height:6px;border-radius:8px;background:#ffb02e;box-shadow:0 0 12px #ffb02e;margin:0 auto 18px}
         .receipt-paper.hide{display:none!important}.receipt-paper{animation:receiptPrint .75s cubic-bezier(.2,.75,.25,1) both}
@@ -447,15 +447,12 @@
     <div class="receipt-overlay" id="receiptOverlay" role="dialog" aria-modal="true" aria-labelledby="receiptTitle" aria-live="polite">
         <section class="receipt-printer-stage" id="receiptPrinterStage" aria-label="Printing receipt animation">
             <div class="printer-brand">NEW DESI TADKA</div>
-            <div class="receipt-printing-paper"><div class="printing-logo">♨</div><h2>NEW DESI TADKA</h2><p>FROM FARM TO TABLE · 100% VEG</p><hr><strong>Preparing your bill...</strong><div class="printer-icon">▤</div></div>
+            <div class="receipt-printing-paper"><img class="printing-logo" src="/images/logo.png" alt="New Desi Tadka logo" onerror="this.style.display='none'"><h2>NEW DESI TADKA</h2><p>FROM FARM TO TABLE · 100% VEG</p><hr><strong>Preparing your bill...</strong><div class="printer-icon">▤</div></div>
             <div class="printer-machine"><span></span><b>THERMAL RECEIPT PRINTER</b></div>
         </section>
         <section class="receipt-paper hide" id="receiptFinalPaper">
             <header class="receipt-head">
-                <svg class="receipt-icon" viewBox="0 0 64 64" role="img" aria-label="Chef hat and leaf logo">
-                    <g fill="none" stroke="#5a2d22" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 30c-7-1-10-7-7-13 2-4 6-5 10-4 2-7 9-10 15-6 4 2 6 6 5 10 7-1 12 4 11 10-1 4-4 7-9 7H18Z"/><path d="M18 34v8h24v-8"/></g>
-                    <path d="M37 28c4-10 12-12 19-11-1 9-7 16-19 15-2 0-3-2 0-4Z" fill="#5a8a3a"/><path d="M38 30l13-10" stroke="#fffdf7" stroke-width="1.5"/>
-                </svg>
+                <img class="receipt-icon" src="/images/logo.png" alt="New Desi Tadka logo" onerror="this.style.display='none'">
                 <h2 id="receiptTitle">New Desi Tadka</h2><p>FROM FARM TO TABLE</p><p>100% VEG</p>
                 <p style="border-top:1px dashed #9c8b7d;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800;letter-spacing:.5px">ORDER RECEIPT</p>
             </header>
