@@ -722,6 +722,8 @@
                 <button class="primary" onclick="openAdd()">
                     + Add Item
                 </button>
+                <button class="primary" type="button" id="openAiMenu">✨ AI Menu</button>
+                <button class="primary" type="button" id="openOrders">🧾 Orders / Print Bills</button>
 
                 <button class="logout" onclick="logout()">
                     Logout
@@ -1871,6 +1873,55 @@
 
         checkLogin();
 
+    </script>
+
+
+    <style>
+      .feature-modal{display:none;position:fixed;inset:0;background:#0008;z-index:9999;align-items:center;justify-content:center;padding:16px}
+      .feature-modal.show{display:flex}.feature-panel{background:#fff;border-radius:16px;padding:22px;width:min(900px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0003}
+      .feature-panel h2{margin-top:0}.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feature-grid label{display:block;font-weight:600;font-size:13px}.feature-grid input,.feature-grid select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px}
+      .feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ai-preview-row,.order-preview-row{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:10px;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center}.ai-preview-row input,.ai-preview-row select{width:100%;padding:8px;border:1px solid #ddd;border-radius:7px}.feature-status{margin-top:10px;color:#7b3422}.feature-close{float:right}.bill-print{font-family:Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:760px;margin:auto}.bill-print h2,.bill-print p{text-align:center}.bill-print table{width:100%;border-collapse:collapse}.bill-print th,.bill-print td{padding:8px;border-bottom:1px dashed #aaa;text-align:left}.bill-print .right{text-align:right}
+      @media(max-width:650px){.feature-grid{grid-template-columns:1fr}.ai-preview-row,.order-preview-row{grid-template-columns:1fr}}
+      @media print{body.printing-bill *{visibility:hidden!important}body.printing-bill #adminPrintArea,body.printing-bill #adminPrintArea *{visibility:visible!important}body.printing-bill #adminPrintArea{position:absolute;inset:0;width:100%;display:block!important}body.printing-bill .feature-modal{display:none!important}}
+    </style>
+    <div class="feature-modal" id="aiMenuModal" role="dialog" aria-modal="true" aria-labelledby="aiMenuTitle"><section class="feature-panel">
+      <button class="feature-close" type="button" data-close-feature="aiMenuModal">Close ✕</button><h2 id="aiMenuTitle">✨ Generate Menu with AI</h2>
+      <div class="feature-grid"><label>Restaurant name<input id="aiRestaurant" value="New Desi Tadka" maxlength="100"></label><label>Cuisine<input id="aiCuisine" value="Indian vegetarian" maxlength="80"></label><label>Categories (comma separated)<input id="aiCategories" value="Starters, Main Course, Desserts, Beverages"></label><label>Number of items<input id="aiCount" type="number" min="1" max="30" value="10"></label><label>Minimum price (₹)<input id="aiPriceMin" type="number" min="0" value="80"></label><label>Maximum price (₹)<input id="aiPriceMax" type="number" min="0" value="500"></label></div>
+      <div class="feature-actions"><button type="button" class="primary" id="generateAiMenu">Generate Menu</button><button type="button" class="primary" id="saveAiMenu" disabled>Save Selected Items</button></div><p class="feature-status" id="aiMenuStatus" role="status"></p><div id="aiMenuPreview"></div>
+    </section></div>
+    <div class="feature-modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle"><section class="feature-panel">
+      <button class="feature-close" type="button" data-close-feature="ordersModal">Close ✕</button><h2 id="ordersTitle">🧾 Orders / Print Bills</h2><p>Only orders available to your authenticated admin session are shown here.</p><div class="feature-actions"><button type="button" class="primary" id="refreshOrders">Refresh Orders</button></div><p class="feature-status" id="ordersStatus" role="status"></p><div id="ordersList"></div>
+    </section></div>
+    <div id="adminPrintArea" style="display:none"></div>
+    <script>
+    (() => {
+      const $ = id => document.getElementById(id); let generatedItems = [];
+      const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      const money = n => "₹" + Number(n || 0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+      const open = id => $(id).classList.add("show"); const close = id => $(id).classList.remove("show");
+      document.getElementById("openAiMenu")?.addEventListener("click",()=>open("aiMenuModal"));
+      document.getElementById("openOrders")?.addEventListener("click",()=>{open("ordersModal");loadOrders();});
+      document.querySelectorAll("[data-close-feature]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeFeature)));
+      document.querySelectorAll(".feature-modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)close(m.id)}));
+      $("generateAiMenu").addEventListener("click", async()=>{
+        const status=$("aiMenuStatus"); status.textContent="Generating menu…"; $("generateAiMenu").disabled=true; $("saveAiMenu").disabled=true; $("aiMenuPreview").innerHTML="";
+        try{
+          const categories=$("aiCategories").value.split(",").map(s=>s.trim()).filter(Boolean);
+          const r=await fetch("/api/ai/generate-menu",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({restaurantName:$("aiRestaurant").value,cuisine:$("aiCuisine").value,categories,count:Number($("aiCount").value),priceMin:Number($("aiPriceMin").value),priceMax:Number($("aiPriceMax").value)})});
+          const data=await r.json(); if(!r.ok)throw new Error(data.message||"Menu generation failed"); generatedItems=data.items.map((x,i)=>({...x,selected:true,_key:i})); renderAiPreview(); status.textContent=`Generated ${generatedItems.length} items. Review and edit them before saving.`; $("saveAiMenu").disabled=!generatedItems.length;
+        }catch(e){status.textContent=e.message;}finally{$("generateAiMenu").disabled=false;}
+      });
+      function renderAiPreview(){ $("aiMenuPreview").innerHTML=generatedItems.map((item,i)=>`<div class="ai-preview-row"><label><input type="checkbox" data-ai-select="${i}" ${item.selected?"checked":""}> Include<br><input data-ai-name="${i}" value="${esc(item.name)}" aria-label="Item name"></label><label>Category<select data-ai-category="${i}">${[...new Set([item.category,"Starters","Main Course","Desserts","Beverages","Breads","Sides"])].map(c=>`<option ${c===item.category?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Price (₹)<input data-ai-price="${i}" type="number" min="0" step="0.01" value="${Number(item.price)||0}"><input data-ai-desc="${i}" value="${esc(item.description)}" aria-label="Description" placeholder="Description"></label><button type="button" data-ai-remove="${i}">Remove</button></div>`).join("");
+        generatedItems.forEach((item,i)=>{ $(`[data-ai-select="${i}"]`).addEventListener("change",e=>item.selected=e.target.checked); $(`[data-ai-name="${i}"]`).addEventListener("input",e=>item.name=e.target.value); $(`[data-ai-category="${i}"]`).addEventListener("change",e=>item.category=e.target.value); $(`[data-ai-price="${i}"]`).addEventListener("input",e=>item.price=Number(e.target.value)); $(`[data-ai-desc="${i}"]`).addEventListener("input",e=>item.description=e.target.value); $(`[data-ai-remove="${i}"]`).addEventListener("click",()=>{generatedItems.splice(i,1);renderAiPreview();}); }); }
+      $("saveAiMenu").addEventListener("click",async()=>{
+        const selected=generatedItems.filter(x=>x.selected); if(!selected.length){$("aiMenuStatus").textContent="Select at least one item.";return;} $("saveAiMenu").disabled=true; let saved=0;
+        try{for(const item of selected){const r=await fetch("/api/menu",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:item.name,category:item.category,price:Number(item.price),description:item.description,image:null})});const d=await r.json();if(!r.ok)throw new Error(d.message||`Failed to save ${item.name}`);saved++;} $("aiMenuStatus").textContent=`Saved ${saved} menu items successfully.`; if(typeof loadMenu==="function")await loadMenu(); generatedItems=[];$("aiMenuPreview").innerHTML="";$("saveAiMenu").disabled=true;
+        }catch(e){$("aiMenuStatus").textContent=`Saved ${saved} item(s). ${e.message}`;$("saveAiMenu").disabled=false;}
+      });
+      $("refreshOrders").addEventListener("click",loadOrders);
+      async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders");const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>`<div class="order-preview-row"><div><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>${esc(o.status||"new")}</small></div><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div>`).join("");d.orders.forEach(o=>list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`).addEventListener("click",()=>printOrder(o)));}catch(e){status.textContent=e.message;}}
+      function printOrder(o){const items=Array.isArray(o.items)?o.items:[];const subtotal=Number(o.subtotal_amount??items.reduce((s,i)=>s+Number(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0)),0));const tax=Number(o.tax_amount??Math.round(subtotal*0.05*100)/100);const location=o.order_type==="Dine In"?`Table Number: ${o.table_number||"—"}`:o.order_type==="Room Service"?`Room Number: ${o.room_number||"—"}`:o.order_type==="Delivery"?`Delivery Address: ${o.delivery_address||"—"}`:"Takeaway";const area=$("adminPrintArea");area.innerHTML=`<article class="bill-print"><h2>NEW DESI TADKA</h2><p>ORDER RECEIPT</p><hr><p>Order: ${esc(o.order_number||o.id)}<br>Date: ${esc(o.created_at?new Date(o.created_at).toLocaleString("en-IN"):"")}<br>Customer: ${esc(o.customer_name)}<br>Phone: ${esc(o.customer_phone)}<br>Order Type: ${esc(o.order_type||"Takeaway")}<br>${esc(location)}</p><table><thead><tr><th>Item</th><th>Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td>${Number(i.quantity||0)}</td><td class="right">${money(i.unitPrice)}</td><td class="right">${money(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0))}</td></tr>`).join("")}</tbody></table><p style="text-align:right">Subtotal: ${money(subtotal)}<br>Tax: ${money(tax)}<br><strong>TOTAL: ${money(o.total_amount)}</strong></p><hr><p>Thank you for ordering!</p></article>`;area.style.display="block";document.body.classList.add("printing-bill");window.print();setTimeout(()=>{document.body.classList.remove("printing-bill");area.style.display="none";},500);}
+    })();
     </script>
 
 </body>

@@ -929,12 +929,11 @@
                 display: none !important
             }
 
-            .receipt-overlay {
-                position: absolute;
-                background: white;
-                display: block !important;
-                padding: 0
-            }
+            .receipt-overlay { position: absolute; background: white; display: block !important; padding: 0; inset: 0; }
+            .receipt-printer-stage, .receipt-actions, #closeReceipt { display: none !important; }
+            #receiptFinalPaper { width: 80mm !important; max-width: 80mm !important; margin: 0 auto !important; padding: 8mm !important; border: 0 !important; border-radius: 0 !important; }
+            #receiptFinalPaper * { color: #000 !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; animation: none !important; }
+            @page { margin: 8mm; }
         }
 
         .receipt-total {
@@ -985,13 +984,12 @@
                 <label for="customerPhone">Mobile number *</label><input id="customerPhone" name="phone" required
                     type="tel" inputmode="tel" pattern="[0-9+() -]{8,18}" maxlength="18" autocomplete="tel"
                     placeholder="Your contact number">
-                <label for="orderType">Order type *</label><select id="orderType" name="orderType">
-                    <option value="Takeaway">Takeaway</option>
-                    <option value="Delivery">Delivery</option>
-                    <option value="Dine-in">Dine-in</option>
+                <label for="orderType">Order type *</label><select id="orderType" name="orderType" required>
+                    <option value="Dine In">Dine In</option><option value="Room Service">Room Service</option><option value="Delivery">Delivery</option><option value="Takeaway">Takeaway</option>
                 </select>
-                <label for="customerAddress">Address / table number</label><textarea id="customerAddress" name="address"
-                    maxlength="300" placeholder="Required for delivery; otherwise optional"></textarea>
+                <div id="tableNumberWrap"><label for="tableNumber">Table Number *</label><input id="tableNumber" name="tableNumber" maxlength="30" placeholder="e.g. 12"></div>
+                <div id="roomNumberWrap" hidden><label for="roomNumber">Room Number *</label><input id="roomNumber" name="roomNumber" maxlength="30" placeholder="e.g. 305"></div>
+                <div id="deliveryFields" hidden><label for="customerAddress">Delivery Address *</label><textarea id="customerAddress" name="address" maxlength="300" placeholder="House / street / area"></textarea><label for="deliveryCity">City *</label><input id="deliveryCity" name="city" maxlength="100" placeholder="City"><label for="deliveryPincode">PIN Code *</label><input id="deliveryPincode" name="pincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit PIN code"></div>
                 <label for="orderNotes">Special instructions</label><textarea id="orderNotes" name="notes"
                     maxlength="300" placeholder="Optional"></textarea>
                 <div class="checkout-buttons"><button class="checkout-cancel" type="button" id="closeCheckout">Continue
@@ -1086,45 +1084,48 @@
             const qty = e.target.closest("[data-qty]");
             if (qty) changeQty(qty.dataset.key, Number(qty.dataset.qty));
         });
-        $("checkoutForm").addEventListener("submit", e => {
+        const orderTypeEl = $("orderType");
+        function updateOrderFields() {
+            const type = orderTypeEl.value;
+            $("tableNumberWrap").hidden = type !== "Dine In";
+            $("roomNumberWrap").hidden = type !== "Room Service";
+            $("deliveryFields").hidden = type !== "Delivery";
+            $("tableNumber").required = type === "Dine In";
+            $("roomNumber").required = type === "Room Service";
+            $("customerAddress").required = type === "Delivery";
+            $("deliveryCity").required = type === "Delivery";
+            $("deliveryPincode").required = type === "Delivery";
+        }
+        orderTypeEl.addEventListener("change", updateOrderFields); updateOrderFields();
+        $("checkoutForm").addEventListener("submit", async e => {
             e.preventDefault(); if (!cart.size) return;
+            const submitButton = e.submitter || $("checkoutForm").querySelector('[type="submit"]');
             const name = $("customerName").value.trim(), phone = $("customerPhone").value.trim();
-            const type = $("orderType").value, address = $("customerAddress").value.trim(), notes = $("orderNotes").value.trim();
+            const type = orderTypeEl.value, address = $("customerAddress").value.trim(), city = $("deliveryCity").value.trim(), pincode = $("deliveryPincode").value.trim();
+            const tableNumber = $("tableNumber").value.trim(), roomNumber = $("roomNumber").value.trim(), notes = $("orderNotes").value.trim();
             if (!name) { $("customerName").focus(); return; }
-            if (!/^[0-9+() -]{8,18}$/.test(phone)) { alert("Please enter a valid mobile number."); $("customerPhone").focus(); return; }
-            if (type === "Delivery" && !address) { alert("Please enter the delivery address."); $("customerAddress").focus(); return; }
-            const orderNumber = "NDT-" + Date.now().toString().slice(-8);
-            const stamp = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-            $("receiptMeta").innerHTML = `
-              <div class="meta-line"><span>Order No</span><span>:</span><span class="meta-value"><strong>${orderNumber}</strong></span></div>
-              <div class="meta-line"><span>Date</span><span>:</span><span class="meta-value">${escapeHtml(stamp)}</span></div>
-              <div class="meta-line"><span>Customer</span><span>:</span><span class="meta-value">${escapeHtml(name)}</span></div>
-              <div class="meta-line"><span>Phone</span><span>:</span><span class="meta-value">${escapeHtml(phone)}</span></div>
-              <div class="meta-line"><span>Order Type</span><span>:</span><span class="meta-value">${escapeHtml(type)}</span></div>
-              ${address ? `<div class="meta-line"><span>Address</span><span>:</span><span class="meta-value">${escapeHtml(address)}</span></div>` : ""}
-              ${notes ? `<div class="meta-line"><span>Instructions</span><span>:</span><span class="meta-value">${escapeHtml(notes)}</span></div>` : ""}`;
-            const receiptItems = [...cart.values()];
-            $("receiptItems").innerHTML = `<div class="receipt-table-head"><span>Item</span><span style="text-align:right">Qty</span><span style="text-align:right">Price</span><span style="text-align:right">Total</span></div>` + receiptItems.map(i => `<div class="receipt-row"><span>${escapeHtml(i.name)}</span><span class="receipt-qty">${i.qty}</span><span class="receipt-price">${money(i.price)}</span><strong class="receipt-line-total">${money(i.price * i.qty)}</strong></div>`).join("");
-            const subtotal = cartTotal();
-            const taxRate = 0.05;
-            const tax = Math.round(subtotal * taxRate * 100) / 100;
-            const deliveryCharge = 0; // Set this to your delivery fee if applicable.
-            const total = subtotal + tax + deliveryCharge;
-            $("receiptSubtotal").textContent = money(subtotal);
-            $("receiptTax").textContent = money(tax);
-            $("receiptTotal").textContent = money(total);
-            $("receiptOverlay").classList.add("show");
-            $("receiptPrinterStage").classList.remove("hide");
-            $("receiptFinalPaper").classList.add("hide");
-            $("checkoutOverlay").classList.remove("show");
-            // Screen 3: CSS thermal-printer animation; Screen 4: final bill.
-            window.setTimeout(() => {
-                $("receiptPrinterStage").classList.add("hide");
-                $("receiptFinalPaper").classList.remove("hide");
-                $("receiptFinalPaper").style.animation = "none";
-                void $("receiptFinalPaper").offsetWidth;
-                $("receiptFinalPaper").style.animation = "";
-            }, 1600);
+            if (!/^[0-9+() .-]{7,20}$/.test(phone)) { alert("Please enter a valid mobile number."); $("customerPhone").focus(); return; }
+            if (type === "Dine In" && !tableNumber) { alert("Enter your table number."); $("tableNumber").focus(); return; }
+            if (type === "Room Service" && !roomNumber) { alert("Enter your room number."); $("roomNumber").focus(); return; }
+            if (type === "Delivery" && (!address || !city || !/^[0-9]{6}$/.test(pincode))) { alert("Enter your full delivery address, city and valid 6-digit PIN code."); return; }
+            submitButton.disabled = true; submitButton.textContent = "Submitting order…";
+            try {
+                const items = [...cart.values()].map(i => ({ name: i.name, quantity: i.qty }));
+                const response = await fetch("/api/restaurants/new-desi-tadka/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerName: name, customerPhone: phone, orderType: type, tableNumber, roomNumber, deliveryAddress: address, deliveryCity: city, deliveryPincode: pincode, notes, items }) });
+                const saved = await response.json(); if (!response.ok) throw new Error(saved.message || "Order could not be saved.");
+                const orderNumber = saved.orderNumber || ("NDT-" + Date.now().toString().slice(-8));
+                const stamp = new Date(saved.createdAt || Date.now()).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+                const locationLabel = type === "Dine In" ? `<div class="meta-line"><span>Table No.</span><span>:</span><span class="meta-value">${escapeHtml(tableNumber)}</span></div>` : type === "Room Service" ? `<div class="meta-line"><span>Room No.</span><span>:</span><span class="meta-value">${escapeHtml(roomNumber)}</span></div>` : type === "Delivery" ? `<div class="meta-line"><span>Address</span><span>:</span><span class="meta-value">${escapeHtml([address,city,pincode].join(", "))}</span></div>` : "";
+                $("receiptMeta").innerHTML = `<div class="meta-line"><span>Order No</span><span>:</span><span class="meta-value"><strong>${escapeHtml(orderNumber)}</strong></span></div><div class="meta-line"><span>Date</span><span>:</span><span class="meta-value">${escapeHtml(stamp)}</span></div><div class="meta-line"><span>Customer</span><span>:</span><span class="meta-value">${escapeHtml(name)}</span></div><div class="meta-line"><span>Phone</span><span>:</span><span class="meta-value">${escapeHtml(phone)}</span></div><div class="meta-line"><span>Order Type</span><span>:</span><span class="meta-value">${escapeHtml(type)}</span></div>${locationLabel}${notes ? `<div class="meta-line"><span>Instructions</span><span>:</span><span class="meta-value">${escapeHtml(notes)}</span></div>` : ""}`;
+                const receiptItems = [...cart.values()];
+                $("receiptItems").innerHTML = `<div class="receipt-table-head"><span>Item</span><span style="text-align:right">Qty</span><span style="text-align:right">Price</span><span style="text-align:right">Total</span></div>` + receiptItems.map(i => `<div class="receipt-row"><span>${escapeHtml(i.name)}</span><span class="receipt-qty">${i.qty}</span><span class="receipt-price">${money(i.price)}</span><strong class="receipt-line-total">${money(i.price * i.qty)}</strong></div>`).join("");
+                const subtotal = Number(saved.subtotal ?? cartTotal()), tax = Number(saved.tax ?? Math.round(subtotal * 0.05 * 100) / 100), total = Number(saved.total ?? subtotal + tax);
+                $("receiptSubtotal").textContent = money(subtotal); $("receiptTax").textContent = money(tax); $("receiptTotal").textContent = money(total);
+                $("receiptOverlay").classList.add("show"); $("receiptPrinterStage").classList.remove("hide"); $("receiptFinalPaper").classList.add("hide"); $("checkoutOverlay").classList.remove("show");
+                cart.clear(); renderCart(); $("checkoutForm").reset(); updateOrderFields();
+                window.setTimeout(() => { $("receiptPrinterStage").classList.add("hide"); $("receiptFinalPaper").classList.remove("hide"); $("receiptFinalPaper").style.animation = "none"; void $("receiptFinalPaper").offsetWidth; $("receiptFinalPaper").style.animation = ""; }, 1600);
+            } catch (error) { alert(error.message || "Unable to submit order. Please try again."); }
+            finally { submitButton.disabled = false; submitButton.textContent = "Confirm Order"; }
         });
         // Close the receipt only when the customer clicks "Back to Menu".
         // Clicking the dark area outside the receipt must not dismiss it.

@@ -1074,6 +1074,368 @@ app.post("/api/restaurants/:slug/publish", requireAdmin, async (req, res) => {
     }
 });
 
+
+// Import and publish a public GitHub repository.
+// Supports static websites at repository root or in a selected folder (for example dist/).
+// React/Vite source projects must provide their built static output folder; this endpoint does not run npm build.
+app.post("/api/restaurants/:slug/import-github", requireAdmin, async (req, res) => {
+    const slug = createRestaurantSlug(req.params.slug);
+    try {
+        const { data: restaurant, error: restaurantError } = await supabase
+            .from("restaurants")
+            .select("id, slug, website_source, github_repository, github_branch, github_folder")
+            .eq("slug", slug)
+            .single();
+
+        if (restaurantError || !restaurant) {
+            return res.status(404).json({ success: false, message: "Restaurant not found." });
+        }
+        if (restaurant.website_source !== "github" || !restaurant.github_repository) {
+            return res.status(400).json({ success: false, message: "This restaurant is not configured for GitHub import." });
+        }
+
+        const repoUrl = new URL(restaurant.github_repository);
+        if (repoUrl.protocol !== "https:" || repoUrl.hostname !== "github.com") {
+            return res.status(400).json({ success: false, message: "Only public HTTPS GitHub repositories are supported." });
+        }
+        const parts = repoUrl.pathname.split("/").filter(Boolean);
+        if (parts.length !== 2 || parts.some(part => part === "." || part === "..")) {
+            return res.status(400).json({ success: false, message: "Repository URL must look like https://github.com/owner/repository." });
+        }
+
+        const owner = parts[0];
+        const repo = parts[1].replace(/\.git$/i, "");
+        const branch = String(restaurant.github_branch || "main").trim();
+        if (!branch || branch.length > 200 || branch.includes("..")) {
+            return res.status(400).json({ success: false, message: "Invalid GitHub branch." });
+        }
+
+        await supabase.from("restaurants")
+            .update({ website_status: "building", updated_at: new Date().toISOString() })
+            .eq("slug", slug);
+
+        const archiveUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/zipball/${encodeURIComponent(branch)}`;
+        const githubResponse = await fetch(archiveUrl, {
+            headers: {
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "VignaDigital-Website-Importer"
+            },
+            redirect: "follow"
+        });
+
+        if (!githubResponse.ok) {
+            const message = githubResponse.status === 404
+                ? "GitHub repository or branch was not found. Check the repository URL and branch name."
+                : githubResponse.status === 403
+                    ? "GitHub rate limit or repository access denied. Try again later; only public repositories are supported."
+                    : `GitHub download failed (${githubResponse.status}).`;
+            throw new Error(message);
+        }
+
+        const declaredLength = Number(githubResponse.headers.get("content-length") || 0);
+        if (declaredLength && declaredLength > MAX_ZIP_BYTES) {
+            throw new Error("GitHub archive exceeds the 5 MB limit. For a React/Vite project, publish a smaller built static folder or use ZIP upload.");
+        }
+        const archiveArrayBuffer = await githubResponse.arrayBuffer();
+        if (archiveArrayBuffer.byteLength > MAX_ZIP_BYTES) {
+            throw new Error("GitHub archive exceeds the 5 MB limit.");
+        }
+
+        const zip = await JSZip.loadAsync(archiveArrayBuffer, { checkCRC32: true });
+        const entries = Object.values(zip.files).filter(entry => !entry.dir);
+        if (!entries.length || entries.length > MAX_ZIP_ENTRIES) {
+            throw new Error(`GitHub repository must contain 1–${MAX_ZIP_ENTRIES} files in the selected website folder.`);
+        }
+
+        // GitHub ZIP archives include one generated top-level directory.
+        const rootPrefix = entries[0].name.split("/")[0] + "/";
+        const selectedFolderRaw = String(restaurant.github_folder || req.body?.websiteFolder || "").trim();
+        const selectedFolder = selectedFolderRaw
+            ? safeWebsitePath(selectedFolderRaw.replace(/\/+$/, ""))
+            : "";
+        if (selectedFolderRaw && !selectedFolder) {
+            throw new Error("Website folder path is invalid.");
+        }
+
+        const candidates = [];
+        for (const entry of entries) {
+            if (!entry.name.startsWith(rootPrefix)) continue;
+            let relative = entry.name.slice(rootPrefix.length);
+            if (!relative || relative.startsWith(".git/") || relative === ".git") continue;
+
+            if (selectedFolder) {
+                if (!relative.startsWith(`${selectedFolder}/`)) continue;
+                relative = relative.slice(selectedFolder.length + 1);
+            }
+
+            if (!relative || relative.split("/").some(part => part === "..")) continue;
+
+            // Ignore repository metadata/documentation, not website runtime assets.
+            const basename = relative.split("/").pop().toLowerCase();
+            if (
+                basename === "readme.md" ||
+                basename === "readme.txt" ||
+                basename === "license" ||
+                basename.startsWith("license.") ||
+                basename === ".gitignore" ||
+                basename === ".gitattributes" ||
+                basename === "package.json" ||
+                basename === "package-lock.json" ||
+                basename === "pnpm-lock.yaml" ||
+                basename === "yarn.lock" ||
+                basename === "tsconfig.json" ||
+                basename === "vite.config.js" ||
+                basename === "vite.config.ts"
+            ) continue;
+
+            candidates.push({ entry, relative });
+        }
+
+        if (!candidates.some(item => item.relative === "index.html")) {
+            if (selectedFolder) {
+                throw new Error(`No index.html was found inside the selected GitHub folder "${selectedFolder}". For React/Vite, choose the built dist folder.`);
+            }
+            // If root doesn't have index.html, infer a single nested website folder.
+            const firstSegments = [...new Set(candidates.map(item => item.relative.split("/")[0]))];
+            const nestedRoot = firstSegments.length === 1 ? firstSegments[0] : "";
+            if (nestedRoot && candidates.some(item => item.relative === `${nestedRoot}/index.html`)) {
+                for (const item of candidates) {
+                    if (item.relative.startsWith(`${nestedRoot}/`)) {
+                        item.relative = item.relative.slice(nestedRoot.length + 1);
+                    } else {
+                        item.relative = "";
+                    }
+                }
+            }
+        }
+
+        if (!candidates.some(item => item.relative === "index.html")) {
+            throw new Error("No static index.html found. For React/Vite repositories, build the project and import the dist folder; VignaDigital does not run npm install/build during import.");
+        }
+
+        const publishFiles = [];
+        let totalBytes = 0;
+        for (const item of candidates) {
+            if (!item.relative) continue;
+            const safePath = safeWebsitePath(item.relative);
+            if (!safePath) throw new Error(`Unsafe path in GitHub archive: ${item.relative}`);
+            if (!isAllowedWebsiteFile(safePath)) {
+                // Ignore non-web source/docs files; don't publish them as website assets.
+                continue;
+            }
+            const buffer = await item.entry.async("nodebuffer");
+            totalBytes += buffer.length;
+            if (totalBytes > MAX_UNZIPPED_BYTES) throw new Error("Uncompressed website exceeds the 25 MB limit.");
+            publishFiles.push({ path: safePath, buffer });
+        }
+
+        if (!publishFiles.some(file => file.path === "index.html")) {
+            throw new Error("The selected GitHub folder does not contain a publishable index.html.");
+        }
+
+        // Remove old published files recursively before replacing the website.
+        async function removeStorageFolder(folderPath) {
+            const { data: listed, error: listError } = await supabase.storage
+                .from(SITE_BUCKET).list(folderPath, { limit: 100 });
+            if (listError) throw new Error(`Could not inspect existing website files: ${listError.message}`);
+            for (const item of listed || []) {
+                const childPath = `${folderPath}/${item.name}`;
+                if (item.id === null) {
+                    await removeStorageFolder(childPath);
+                } else {
+                    const { error: removeError } = await supabase.storage.from(SITE_BUCKET).remove([childPath]);
+                    if (removeError) throw new Error(`Could not remove old website file: ${removeError.message}`);
+                }
+            }
+        }
+        await removeStorageFolder(slug);
+
+        for (const file of publishFiles) {
+            const destination = `${slug}/${file.path}`;
+            const { error: uploadError } = await supabase.storage.from(SITE_BUCKET).upload(destination, file.buffer, {
+                contentType: require("mime-types").lookup(file.path) || "application/octet-stream",
+                upsert: true,
+                cacheControl: "3600"
+            });
+            if (uploadError) throw new Error(`Failed to publish ${file.path}: ${uploadError.message}`);
+        }
+
+        const { error: updateError } = await supabase.from("restaurants").update({
+            website_status: "published",
+            website_path: `${slug}/index.html`,
+            updated_at: new Date().toISOString()
+        }).eq("slug", slug);
+        if (updateError) throw new Error(`Website files uploaded but database update failed: ${updateError.message}`);
+
+        return res.json({
+            success: true,
+            message: "GitHub website imported and published successfully.",
+            url: `/${slug}`,
+            filesPublished: publishFiles.length
+        });
+    } catch (error) {
+        console.error("GitHub website import failed:", error.message);
+        await supabase.from("restaurants").update({
+            website_status: "failed",
+            updated_at: new Date().toISOString()
+        }).eq("slug", slug);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "GitHub website import failed."
+        });
+    }
+});
+
+// ========================================
+// CUSTOMER ORDERS + RESTAURANT NOTIFICATIONS
+// Required table SQL is provided in orders-schema.sql.
+// Email notifications use Resend when RESEND_API_KEY and ORDER_FROM_EMAIL are set.
+// SMS notifications use Twilio when all TWILIO_* variables are set.
+// ========================================
+app.post("/api/restaurants/:slug/orders", async (req, res) => {
+    try {
+        const slug = createRestaurantSlug(req.params.slug);
+        if (!slug) return res.status(400).json({ message: "Invalid restaurant URL." });
+        const { customerName, customerPhone, customerEmail, orderType, tableNumber, roomNumber, deliveryAddress, deliveryCity, deliveryPincode, notes, items } = req.body || {};
+        const normalizedType = String(orderType || "Takeaway").trim();
+        const allowedTypes = ["Dine In", "Room Service", "Delivery", "Takeaway"];
+        if (!allowedTypes.includes(normalizedType)) return res.status(400).json({ message: "Choose a valid order type." });
+        if (normalizedType === "Dine In" && !String(tableNumber || "").trim()) return res.status(400).json({ message: "Table number is required for dine-in orders." });
+        if (normalizedType === "Room Service" && !String(roomNumber || "").trim()) return res.status(400).json({ message: "Room number is required for room-service orders." });
+        if (normalizedType === "Delivery" && (!String(deliveryAddress || "").trim() || !String(deliveryCity || "").trim() || !String(deliveryPincode || "").trim())) return res.status(400).json({ message: "Address, city and PIN code are required for delivery." });
+        if (!String(customerName || "").trim() || !String(customerPhone || "").trim()) {
+            return res.status(400).json({ message: "Customer name and mobile number are required." });
+        }
+        if (!/^[0-9+() .-]{7,20}$/.test(String(customerPhone).trim())) {
+            return res.status(400).json({ message: "Enter a valid customer mobile number." });
+        }
+        if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(customerEmail).trim())) {
+            return res.status(400).json({ message: "Enter a valid customer email address." });
+        }
+        if (!Array.isArray(items) || !items.length || items.length > 50) {
+            return res.status(400).json({ message: "Add at least one menu item to your order." });
+        }
+        const { data: restaurant, error: restaurantError } = await supabase
+            .from("restaurants")
+            .select("id, restaurant_name, slug, mobile, email, website_status")
+            .eq("slug", slug).maybeSingle();
+        if (restaurantError || !restaurant) return res.status(404).json({ message: "Restaurant not found for this menu URL." });
+        if (restaurant.website_status !== "published" && slug !== "new-desi-tadka") {
+            return res.status(400).json({ message: "This restaurant is not accepting online orders yet." });
+        }
+        // Read current menu prices from the database; never trust client-submitted prices.
+      // Retrieve menu items and log the real database error if the query fails.
+const {
+    data: menuRows,
+    error: menuError
+} = await supabase
+    .from("menu_items")
+    .select("*");
+
+if (menuError) {
+    console.error(
+        "Menu price verification failed:",
+        menuError.code,
+        menuError.message,
+        menuError.details,
+        menuError.hint
+    );
+
+    return res.status(500).json({
+        message: "Could not verify current menu prices.",
+        error: menuError.message,
+        code: menuError.code
+    });
+}
+
+if (!menuRows || menuRows.length === 0) {
+    return res.status(400).json({
+        message: "No menu items were found in the database."
+    });
+}
+        const requested = [];
+        for (const item of items) {
+            const name = String(item?.name || "").trim();
+            const quantity = Number(item?.quantity);
+            if (!name || !Number.isInteger(quantity) || quantity < 1 || quantity > 50) {
+                return res.status(400).json({ message: "One of the requested items or quantities is invalid." });
+            }
+            const menuItem = (menuRows || []).find(row => String(row.name || row.title || "").trim() === name);
+            if (!menuItem || !Number.isFinite(Number(menuItem.price)) || Number(menuItem.price) < 0) {
+                return res.status(400).json({ message: `${name} is no longer available. Refresh the menu and try again.` });
+            }
+            requested.push({ name, quantity, unitPrice: Number(menuItem.price), lineTotal: Number(menuItem.price) * quantity });
+        }
+        const subtotal = Math.round(requested.reduce((sum, item) => sum + item.lineTotal, 0) * 100) / 100;
+        const taxRate = 0.05;
+        const tax = Math.round(subtotal * taxRate * 100) / 100;
+        const total = Math.round((subtotal + tax) * 100) / 100;
+        const orderNumber = `NDT-${Date.now().toString().slice(-8)}`;
+        const orderRecord = {
+            restaurant_id: restaurant.id,
+            restaurant_slug: slug,
+            order_number: orderNumber,
+            customer_name: String(customerName).trim().slice(0, 100),
+            customer_phone: String(customerPhone).trim().slice(0, 20),
+            customer_email: customerEmail ? String(customerEmail).trim().slice(0, 254) : null,
+            order_type: normalizedType,
+            table_number: normalizedType === "Dine In" ? String(tableNumber).trim().slice(0, 30) : null,
+            room_number: normalizedType === "Room Service" ? String(roomNumber).trim().slice(0, 30) : null,
+            delivery_address: normalizedType === "Delivery" ? [deliveryAddress, deliveryCity, deliveryPincode].map(v => String(v || "").trim()).filter(Boolean).join(", ").slice(0, 500) : null,
+            delivery_city: normalizedType === "Delivery" ? String(deliveryCity).trim().slice(0, 100) : null,
+            delivery_pincode: normalizedType === "Delivery" ? String(deliveryPincode).trim().slice(0, 12) : null,
+            subtotal_amount: subtotal,
+            tax_amount: tax,
+            tax_rate: taxRate,
+            notes: notes ? String(notes).trim().slice(0, 500) : null,
+            items: requested,
+            total_amount: total,
+            status: "new"
+        };
+        const { data: savedOrder, error: saveError } = await supabase.from("restaurant_orders").insert(orderRecord).select("id,order_number,total_amount").single();
+        if (saveError) {
+            console.error("Order database insert failed:", saveError.message);
+            if (saveError.code === "42P01") return res.status(500).json({ message: "Orders table is not configured yet. Run orders-schema.sql in Supabase SQL Editor." });
+            throw new Error("Could not save your order. Please try again.");
+        }
+        const money = value => `₹${Number(value).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+        const lines = requested.map(item => `${item.quantity} × ${item.name} — ${money(item.lineTotal)}`).join("\n");
+        const locationLine = normalizedType === "Dine In" ? `Table: ${orderRecord.table_number}` : normalizedType === "Room Service" ? `Room: ${orderRecord.room_number}` : normalizedType === "Delivery" ? `Delivery address: ${orderRecord.delivery_address}` : "Takeaway";
+        const message = `New order ${orderNumber}\nRestaurant: ${restaurant.restaurant_name}\nOrder type: ${normalizedType}\n${locationLine}\n\n${lines}\n\nSubtotal: ${money(subtotal)}\nTax (5%): ${money(tax)}\nTotal: ${money(total)}\nCustomer: ${orderRecord.customer_name}\nPhone: ${orderRecord.customer_phone}\nEmail: ${orderRecord.customer_email || "Not provided"}\nNotes: ${orderRecord.notes || "None"}`;
+        let notificationSent = false;
+        const notificationErrors = [];
+        // Send email through Resend if configured.
+        if (restaurant.email && process.env.RESEND_API_KEY && process.env.ORDER_FROM_EMAIL) {
+            try {
+                const emailResponse = await fetch("https://api.resend.com/emails", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ from: process.env.ORDER_FROM_EMAIL, to: [restaurant.email], subject: `New order ${orderNumber} — ${restaurant.restaurant_name}`, text: message })
+                });
+                if (emailResponse.ok) notificationSent = true;
+                else notificationErrors.push(`Email provider returned ${emailResponse.status}`);
+            } catch (err) { notificationErrors.push("Email delivery failed"); console.error("Order email error:", err.message); }
+        }
+        // Send SMS using Twilio only when the restaurant phone and credentials are configured.
+        if (restaurant.mobile && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_FROM_NUMBER) {
+            try {
+                const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64");
+                const body = new URLSearchParams({ To: restaurant.mobile.startsWith("+") ? restaurant.mobile : `+91${restaurant.mobile}`, From: process.env.TWILIO_FROM_NUMBER, Body: message.slice(0, 1500) });
+                const smsResponse = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, { method: "POST", headers: { "Authorization": `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" }, body });
+                if (smsResponse.ok) notificationSent = true;
+                else notificationErrors.push(`SMS provider returned ${smsResponse.status}`);
+            } catch (err) { notificationErrors.push("SMS delivery failed"); console.error("Order SMS error:", err.message); }
+        }
+        // Return a WhatsApp link as a useful fallback; user must tap it to send from their device.
+        const digits = String(restaurant.mobile || "").replace(/\D/g, "");
+        const whatsappUrl = digits ? `https://wa.me/${digits.startsWith("91") ? digits : `91${digits}`}?text=${encodeURIComponent(message)}` : null;
+        return res.status(201).json({ success: true, orderId: savedOrder.id, orderNumber: savedOrder.order_number, subtotal, tax, total: savedOrder.total_amount, orderType: normalizedType, createdAt: new Date().toISOString(), notificationSent, whatsappUrl, message: notificationSent ? "Order received and restaurant notified." : "Order received. Restaurant notification is not configured; use the WhatsApp link to send it." });
+    } catch (error) {
+        console.error("Order submission failed:", error.message);
+        return res.status(500).json({ message: error.message || "Unable to submit order." });
+    }
+});
+
 // Serve published websites at /restaurant-slug and /restaurant-slug/assets/...
 async function serveRestaurantWebsite(req, res, next) {
     try {
@@ -1512,6 +1874,70 @@ app.get(
     }
 );
 
+
+// ========================================
+// AI MENU GENERATION + AUTHORIZED ORDER LIST
+// Requires OPENAI_API_KEY in server environment.
+// ========================================
+app.post("/api/ai/generate-menu", requireAdmin, async (req, res) => {
+    try {
+        if (!process.env.OPENAI_API_KEY) return res.status(503).json({ message: "AI menu generation is not configured. Add OPENAI_API_KEY to the server environment." });
+        const cuisine = String(req.body?.cuisine || "Indian").trim().slice(0, 80);
+        const restaurantName = String(req.body?.restaurantName || "New Desi Tadka").trim().slice(0, 100);
+        const categories = Array.isArray(req.body?.categories) ? req.body.categories.map(v => String(v).trim().slice(0, 60)).filter(Boolean).slice(0, 12) : ["Starters", "Main Course", "Desserts", "Beverages"];
+        const count = Math.max(1, Math.min(30, Number.parseInt(req.body?.count, 10) || 10));
+        const priceMin = Math.max(0, Number(req.body?.priceMin) || 0);
+        const priceMax = Math.max(priceMin, Number(req.body?.priceMax) || 1000);
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+                temperature: 0.7,
+                response_format: { type: "json_object" },
+                messages: [
+                    { role: "system", content: "Return valid JSON only in the form {\"items\":[{\"name\":string,\"category\":string,\"description\":string,\"price\":number,\"image\":string|null,\"available\":boolean}]}. Generate realistic menu ideas. Do not invent image URLs; use null for image." },
+                    { role: "user", content: `Create ${count} menu items for ${restaurantName}. Cuisine: ${cuisine}. Use only these categories: ${categories.join(", ")}. Prices in INR between ${priceMin} and ${priceMax}. Include concise descriptions and set available=true.` }
+                ]
+            })
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+            console.error("AI menu provider error:", payload?.error?.message || response.status);
+            return res.status(502).json({ message: "AI menu provider request failed. Check the API key, model and provider limits." });
+        }
+        let parsed;
+        try { parsed = JSON.parse(payload.choices?.[0]?.message?.content || "{}"); }
+        catch { return res.status(502).json({ message: "AI returned an invalid menu format. Please try again." }); }
+        const items = (Array.isArray(parsed.items) ? parsed.items : []).slice(0, count).map(item => ({
+            name: String(item.name || "").trim().slice(0, 120),
+            category: String(item.category || categories[0] || "Main Course").trim().slice(0, 60),
+            description: String(item.description || "").trim().slice(0, 500),
+            price: Math.round(Number(item.price) * 100) / 100,
+            image: null,
+            available: item.available !== false
+        })).filter(item => item.name && Number.isFinite(item.price) && item.price >= 0);
+        if (!items.length) return res.status(502).json({ message: "AI did not return usable menu items. Please try again." });
+        return res.json({ items });
+    } catch (error) {
+        console.error("AI menu generation failed:", error.message);
+        return res.status(500).json({ message: "Unable to generate menu items right now." });
+    }
+});
+
+app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+    try {
+        const { data, error } = await supabase.from("restaurant_orders").select("id,order_number,restaurant_slug,customer_name,customer_phone,customer_email,order_type,table_number,room_number,delivery_address,delivery_city,delivery_pincode,items,subtotal_amount,tax_amount,total_amount,status,notes,created_at").order("created_at", { ascending: false }).limit(100);
+        if (error) {
+            if (error.code === "42703") return res.status(500).json({ message: "Run the provided orders-schema.sql migration first." });
+            throw error;
+        }
+        res.json({ orders: data || [] });
+    } catch (error) {
+        console.error("Admin orders load failed:", error.message);
+        res.status(500).json({ message: "Could not load orders." });
+    }
+});
 
 // ========================================
 // START SERVER
