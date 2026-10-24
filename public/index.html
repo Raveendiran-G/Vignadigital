@@ -960,16 +960,51 @@
     </style>
 
     <style id="order-status-modal-style">
-      #orderStatusToast{display:none;position:fixed;inset:auto 20px 20px auto;z-index:2147483647;background:transparent;align-items:flex-end;justify-content:flex-end;padding:0;pointer-events:none}
-      #orderStatusToast .order-status-dialog{width:min(calc(100vw - 32px),390px);background:#fff;color:#172033;border:1px solid #e2e8f0;border-left:5px solid #e8761f;border-radius:16px;padding:22px 22px 20px;box-shadow:0 12px 38px rgba(0,0,0,.22);position:relative;text-align:left;font-family:inherit;pointer-events:auto}
-      #orderStatusToast .order-status-close{position:absolute;top:8px;right:8px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#f1f5f9;color:#334155;font-size:26px;line-height:1;cursor:pointer;z-index:2;pointer-events:auto}
-      #orderStatusToast .order-status-close:hover{background:#e2e8f0}
-      #orderStatusToast .order-status-close:focus-visible{outline:3px solid #e8761f;outline-offset:2px}
-      #orderStatusToast .order-status-icon{font-size:28px;margin:0 48px 8px 0}
-      #orderStatusToast .order-status-title{font-size:18px;font-weight:800;margin:0 42px 8px 0;text-align:left}
-      #orderStatusToast .order-status-message{font-size:14px;line-height:1.5;margin:0;color:#475569;text-align:left}
-      #orderStatusToast .order-status-dialog:focus{outline:3px solid #cbd5e1;outline-offset:3px}
-      @media(max-width:480px){#orderStatusToast{inset:auto 12px 12px 12px}#orderStatusToast .order-status-dialog{width:100%}}
+      #orderStatusToast{
+        display:none;position:fixed;right:16px;bottom:16px;z-index:9999;
+        align-items:center;justify-content:flex-end;padding:0;background:transparent;
+        pointer-events:none;max-width:calc(100vw - 32px)
+      }
+      #orderStatusToast .order-status-dialog{
+        display:flex;align-items:center;gap:8px;position:relative;
+        width:max-content;max-width:100%;box-sizing:border-box;
+        background:#fff4e8;color:#713b0b;border:1px solid #f4b36c;
+        border-left:4px solid #e8761f;border-radius:8px;
+        padding:10px 38px 10px 12px;box-shadow:0 4px 14px rgba(0,0,0,.12);
+        font-family:inherit;text-align:left;pointer-events:auto
+      }
+      #orderStatusToast .order-status-close{
+        position:absolute;top:50%;right:5px;transform:translateY(-50%);
+        display:flex;align-items:center;justify-content:center;width:26px;height:26px;
+        padding:0;border:0;border-radius:5px;background:transparent;color:#713b0b;
+        font-size:21px;line-height:1;cursor:pointer
+      }
+      #orderStatusToast .order-status-close:hover{background:rgba(113,59,11,.1)}
+      #orderStatusToast .order-status-icon,#orderStatusToast .order-status-title{display:none}
+      #orderStatusToast.status-sent .order-status-dialog{
+        background:#fff4e8;color:#713b0b;border-color:#f4b36c;border-left-color:#e8761f
+      }
+      #orderStatusToast.status-active .order-status-dialog{
+        background:#eaf3ff;color:#174a8b;border-color:#9bc5ff;border-left-color:#2878d0
+      }
+      #orderStatusToast.status-prepared .order-status-dialog{
+        background:#e9f9ef;color:#176536;border-color:#9ad8ae;border-left-color:#239653
+      }
+      #orderStatusToast.status-accepted .order-status-dialog{
+        background:#eef9f0;color:#1f6b38;border-color:#a6ddb3;border-left-color:#29964a
+      }
+      #orderStatusToast.status-cancelled .order-status-dialog{
+        background:#fff0f0;color:#8b1e1e;border-color:#f2aaaa;border-left-color:#d93636
+      }
+      #orderStatusToast .order-status-message{
+        margin:0;font-size:13px;font-weight:650;line-height:1.35;
+        white-space:normal;overflow-wrap:anywhere
+      }
+      @media(max-width:480px){
+        #orderStatusToast{right:10px;bottom:10px;max-width:calc(100vw - 20px)}
+        #orderStatusToast .order-status-dialog{padding:9px 34px 9px 10px}
+        #orderStatusToast .order-status-message{font-size:12px}
+      }
     </style>
 
 </head>
@@ -1158,6 +1193,21 @@
             if (titleNode) titleNode.textContent = title;
             if (messageNode) messageNode.textContent = message;
             if (iconNode) iconNode.textContent = icon;
+
+            popup.classList.remove("status-sent", "status-active", "status-prepared", "status-accepted", "status-cancelled");
+            const statusText = `${title} ${message}`.toLowerCase();
+            if (statusText.includes("prepared")) {
+                popup.classList.add("status-prepared");
+            } else if (statusText.includes("active")) {
+                popup.classList.add("status-active");
+            } else if (statusText.includes("cancelled") || statusText.includes("canceled")) {
+                popup.classList.add("status-cancelled");
+            } else if (statusText.includes("accepted")) {
+                popup.classList.add("status-accepted");
+            } else {
+                popup.classList.add("status-sent");
+            }
+
             popup.style.display = "flex";
             popup.setAttribute("aria-hidden", "false");
         }
@@ -1857,8 +1907,8 @@
         loadMenu();
     </script>
 
-    <div id="orderStatusToast" role="dialog" aria-modal="true" aria-labelledby="orderStatusTitle" aria-describedby="orderStatusMessage">
-      <section class="order-status-dialog" tabindex="-1">
+    <div id="orderStatusToast" role="status" aria-live="polite" aria-labelledby="orderStatusTitle" aria-describedby="orderStatusMessage">
+      <section class="order-status-dialog">
         <button type="button" class="order-status-close" id="orderStatusClose" aria-label="Close notification">×</button>
         <div class="order-status-icon" id="orderStatusIcon">🔔</div>
         <h2 class="order-status-title" id="orderStatusTitle">Order update</h2>
