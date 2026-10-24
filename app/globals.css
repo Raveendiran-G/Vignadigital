@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { -webkit-tap-highlight-color: transparent; }
+body { @apply bg-paper text-ink font-sans antialiased; }
+:focus-visible { outline: 2px solid #1F4D3A; outline-offset: 2px; }
+
+@keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet { animation: sheet-up .22s ease-out; }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+
+/* ── 80mm thermal receipt ─────────────────────────────────────────────── */
+.receipt {
+  width: 80mm;
+  margin: 0 auto;
+  padding: 4mm;
+  background: #fff;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.receipt .center { text-align: center; }
+.receipt .dash { border: 0; border-top: 1px dashed #000; margin: 6px 0; }
+.receipt .row { display: flex; justify-content: space-between; gap: 8px; }
+.receipt .row > span:last-child { white-space: nowrap; }
+.receipt .big { font-size: 15px; font-weight: 700; }
+.receipt .item-name { word-break: break-word; }
+
+@page { size: 80mm auto; margin: 0; }
+@media print {
+  html, body { background: #fff !important; width: 80mm; margin: 0; padding: 0; }
+  .no-print { display: none !important; }
+  .receipt { width: 80mm; padding: 3mm; margin: 0; box-shadow: none; }
+}

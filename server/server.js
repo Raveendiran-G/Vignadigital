@@ -1925,6 +1925,70 @@ app.post("/api/ai/generate-menu", requireAdmin, async (req, res) => {
     }
 });
 
+
+// Public, privacy-safe order status endpoint used by the customer's menu page.
+app.get("/api/orders/:id/status", async (req, res) => {
+    try {
+        const orderId = String(req.params.id || "");
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) {
+            return res.status(400).json({ message: "Invalid order ID." });
+        }
+        const { data, error } = await supabase
+            .from("restaurant_orders")
+            .select("id,order_number,status")
+            .eq("id", orderId)
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) return res.status(404).json({ message: "Order not found." });
+        res.setHeader("Cache-Control", "no-store");
+        return res.json({ orderId: data.id, orderNumber: data.order_number, status: data.status || "new" });
+    } catch (error) {
+        console.error("Order status lookup failed:", error.message);
+        return res.status(500).json({ message: "Could not check order status." });
+    }
+});
+
+// Restaurant owner updates order progress from the admin page.
+// Keep Supabase's existing allowed statuses: new, accepted, preparing, completed, cancelled.
+app.patch("/api/admin/orders/:id/status", requireAdmin, async (req, res) => {
+    try {
+        const orderId = String(req.params.id || "");
+        const requestedStatus = String(req.body?.status || "").trim().toLowerCase();
+
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) {
+            return res.status(400).json({ message: "Invalid order ID." });
+        }
+
+        // UI labels map to the values already allowed by restaurant_orders_status_check.
+        const statusMap = {
+            active: "preparing",
+            prepared: "completed"
+        };
+        const status = statusMap[requestedStatus];
+
+        if (!status) {
+            return res.status(400).json({ message: "Status must be Active or Prepared." });
+        }
+
+        const { data, error } = await supabase
+            .from("restaurant_orders")
+            .update({ status })
+            .eq("id", orderId)
+            .select("id,order_number,status")
+            .single();
+
+        if (error) {
+            console.error("Supabase order status update error:", error.code, error.message, error.details);
+            throw error;
+        }
+
+        return res.json({ success: true, order: data });
+    } catch (error) {
+        console.error("Order status update failed:", error.message);
+        return res.status(500).json({ message: "Could not update order status." });
+    }
+});
+
 app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     try {
         const { data, error } = await supabase.from("restaurant_orders").select("id,order_number,restaurant_slug,customer_name,customer_phone,customer_email,order_type,table_number,room_number,delivery_address,delivery_city,delivery_pincode,items,subtotal_amount,tax_amount,total_amount,status,notes,created_at").order("created_at", { ascending: false }).limit(100);

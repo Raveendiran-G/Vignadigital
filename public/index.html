@@ -958,6 +958,20 @@
             }
         }
     </style>
+
+    <style id="order-status-modal-style">
+      #orderStatusToast{display:none;position:fixed;inset:auto 20px 20px auto;z-index:2147483647;background:transparent;align-items:flex-end;justify-content:flex-end;padding:0;pointer-events:none}
+      #orderStatusToast .order-status-dialog{width:min(calc(100vw - 32px),390px);background:#fff;color:#172033;border:1px solid #e2e8f0;border-left:5px solid #e8761f;border-radius:16px;padding:22px 22px 20px;box-shadow:0 12px 38px rgba(0,0,0,.22);position:relative;text-align:left;font-family:inherit;pointer-events:auto}
+      #orderStatusToast .order-status-close{position:absolute;top:8px;right:8px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#f1f5f9;color:#334155;font-size:26px;line-height:1;cursor:pointer;z-index:2;pointer-events:auto}
+      #orderStatusToast .order-status-close:hover{background:#e2e8f0}
+      #orderStatusToast .order-status-close:focus-visible{outline:3px solid #e8761f;outline-offset:2px}
+      #orderStatusToast .order-status-icon{font-size:28px;margin:0 48px 8px 0}
+      #orderStatusToast .order-status-title{font-size:18px;font-weight:800;margin:0 42px 8px 0;text-align:left}
+      #orderStatusToast .order-status-message{font-size:14px;line-height:1.5;margin:0;color:#475569;text-align:left}
+      #orderStatusToast .order-status-dialog:focus{outline:3px solid #cbd5e1;outline-offset:3px}
+      @media(max-width:480px){#orderStatusToast{inset:auto 12px 12px 12px}#orderStatusToast .order-status-dialog{width:100%}}
+    </style>
+
 </head>
 
 <body>
@@ -1114,6 +1128,8 @@
                 const response = await fetch("/api/restaurants/new-desi-tadka/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerName: name, customerPhone: phone, orderType: type, tableNumber, roomNumber, deliveryAddress: address, deliveryCity: city, deliveryPincode: pincode, notes, items }) });
                 const saved = await response.json(); if (!response.ok) throw new Error(saved.message || "Order could not be saved.");
                 const orderNumber = saved.orderNumber || ("NDT-" + Date.now().toString().slice(-8));
+                if (saved.orderId) startOrderStatusTracking(saved.orderId, orderNumber);
+                showOrderStatusToast(`Your order ${orderNumber} has been sent to the restaurant owner. Please wait for the restaurant to confirm it.`, "Order sent to restaurant", "📨");
                 const stamp = new Date(saved.createdAt || Date.now()).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
                 const locationLabel = type === "Dine In" ? `<div class="meta-line"><span>Table No.</span><span>:</span><span class="meta-value">${escapeHtml(tableNumber)}</span></div>` : type === "Room Service" ? `<div class="meta-line"><span>Room No.</span><span>:</span><span class="meta-value">${escapeHtml(roomNumber)}</span></div>` : type === "Delivery" ? `<div class="meta-line"><span>Address</span><span>:</span><span class="meta-value">${escapeHtml([address,city,pincode].join(", "))}</span></div>` : "";
                 $("receiptMeta").innerHTML = `<div class="meta-line"><span>Order No</span><span>:</span><span class="meta-value"><strong>${escapeHtml(orderNumber)}</strong></span></div><div class="meta-line"><span>Date</span><span>:</span><span class="meta-value">${escapeHtml(stamp)}</span></div><div class="meta-line"><span>Customer</span><span>:</span><span class="meta-value">${escapeHtml(name)}</span></div><div class="meta-line"><span>Phone</span><span>:</span><span class="meta-value">${escapeHtml(phone)}</span></div><div class="meta-line"><span>Order Type</span><span>:</span><span class="meta-value">${escapeHtml(type)}</span></div>${locationLabel}${notes ? `<div class="meta-line"><span>Instructions</span><span>:</span><span class="meta-value">${escapeHtml(notes)}</span></div>` : ""}`;
@@ -1127,6 +1143,92 @@
             } catch (error) { alert(error.message || "Unable to submit order. Please try again."); }
             finally { submitButton.disabled = false; submitButton.textContent = "Confirm Order"; }
         });
+
+        // Customer order status popup and polling (uses the existing public status endpoint).
+        let orderStatusTimer = null;
+        let lastCustomerOrderStatus = null;
+        
+
+        function showOrderStatusToast(message, title = "Order update", icon = "📨") {
+            const popup = $("orderStatusToast");
+            if (!popup) return;
+            const titleNode = popup.querySelector(".order-status-title");
+            const messageNode = popup.querySelector(".order-status-message");
+            const iconNode = popup.querySelector(".order-status-icon");
+            if (titleNode) titleNode.textContent = title;
+            if (messageNode) messageNode.textContent = message;
+            if (iconNode) iconNode.textContent = icon;
+            popup.style.display = "flex";
+            popup.setAttribute("aria-hidden", "false");
+        }
+
+        function closeOrderStatusToast() {
+            const toast = $("orderStatusToast");
+            if (toast) toast.style.display = "none";
+            document.body.style.overflow = "";
+        }
+        // Only the top-right × button dismisses the notification.
+        const orderStatusCloseButton = $("orderStatusClose");
+        if (orderStatusCloseButton) {
+            orderStatusCloseButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const popup = $("orderStatusToast");
+                if (popup) {
+                    popup.style.display = "none";
+                    popup.setAttribute("aria-hidden", "true");
+                }
+            });
+        }
+
+        function startOrderStatusTracking(orderId, orderNumber) {
+            if (!orderId) return;
+            if (orderStatusTimer) clearInterval(orderStatusTimer);
+            lastCustomerOrderStatus = null;
+            localStorage.setItem("desiTadkaActiveOrder", JSON.stringify({ orderId, orderNumber }));
+            const checkStatus = async () => {
+                try {
+                    const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}/status`, {
+                        cache: "no-store",
+                        credentials: "same-origin"
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    const current = String(data.status || "new").toLowerCase();
+                    if (current !== lastCustomerOrderStatus) {
+                        lastCustomerOrderStatus = current;
+
+                        // Show the current status on the first poll too. This handles
+                        // customers who refresh/return after the owner has pressed Active.
+                        if (current === "accepted") {
+                            showOrderStatusToast(`Your order ${orderNumber} has been sent to the restaurant owner. The restaurant has accepted your order.`, "Order accepted", "✅");
+                        } else if (current === "preparing") {
+                            showOrderStatusToast(`Your order ${orderNumber} is ACTIVE. The restaurant owner has confirmed your order and preparation is starting.`, "Your order is active", "🔵");
+                        } else if (current === "completed") {
+                            showOrderStatusToast(`Your order ${orderNumber} is PREPARED and ready to be served.`, "Your order is prepared", "🟢");
+                            if (orderStatusTimer) clearInterval(orderStatusTimer);
+                            orderStatusTimer = null;
+                            localStorage.removeItem("desiTadkaActiveOrder");
+                        } else if (current === "cancelled") {
+                            showOrderStatusToast(`Order ${orderNumber} was cancelled. Please contact the restaurant.`);
+                            if (orderStatusTimer) clearInterval(orderStatusTimer);
+                            orderStatusTimer = null;
+                            localStorage.removeItem("desiTadkaActiveOrder");
+                        }
+                    }
+                } catch (error) {
+                    console.warn("Order status check failed:", error.message);
+                }
+            };
+            checkStatus();
+            orderStatusTimer = setInterval(checkStatus, 4000);
+        }
+
+        try {
+            const savedActiveOrder = JSON.parse(localStorage.getItem("desiTadkaActiveOrder") || "null");
+            if (savedActiveOrder?.orderId) startOrderStatusTracking(savedActiveOrder.orderId, savedActiveOrder.orderNumber || "your order");
+        } catch (_) {}
+
         // Close the receipt only when the customer clicks "Back to Menu".
         // Clicking the dark area outside the receipt must not dismiss it.
         $("closeReceipt").addEventListener("click", () => {
@@ -1754,6 +1856,15 @@
         goHome();
         loadMenu();
     </script>
+
+    <div id="orderStatusToast" role="dialog" aria-modal="true" aria-labelledby="orderStatusTitle" aria-describedby="orderStatusMessage">
+      <section class="order-status-dialog" tabindex="-1">
+        <button type="button" class="order-status-close" id="orderStatusClose" aria-label="Close notification">×</button>
+        <div class="order-status-icon" id="orderStatusIcon">🔔</div>
+        <h2 class="order-status-title" id="orderStatusTitle">Order update</h2>
+        <p class="order-status-message" id="orderStatusMessage"></p>
+      </section>
+    </div>
 </body>
 
 </html>
