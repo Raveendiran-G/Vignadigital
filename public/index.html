@@ -1217,19 +1217,21 @@
             if (toast) toast.style.display = "none";
             document.body.style.overflow = "";
         }
-        // Only the top-right × button dismisses the notification.
-        const orderStatusCloseButton = $("orderStatusClose");
-        if (orderStatusCloseButton) {
-            orderStatusCloseButton.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                const popup = $("orderStatusToast");
-                if (popup) {
-                    popup.style.display = "none";
-                    popup.setAttribute("aria-hidden", "true");
-                }
-            });
-        }
+        // Event delegation works even though the popup HTML appears after this script.
+        // Only clicking the × button dismisses the notification.
+        document.addEventListener("click", (event) => {
+            const closeButton = event.target.closest("#orderStatusClose");
+            if (!closeButton) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const popup = document.getElementById("orderStatusToast");
+            if (popup) {
+                popup.style.display = "none";
+                popup.setAttribute("aria-hidden", "true");
+            }
+        });
 
         function startOrderStatusTracking(orderId, orderNumber) {
             if (!orderId) return;
