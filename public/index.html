@@ -905,57 +905,73 @@
         }
 
         @media print {
-            /* PDF / POS receipt only: exactly 3 inches wide */
             @page {
                 size: 3in auto;
                 margin: 0;
             }
 
             html, body {
-                width: 3in !important;
-                min-width: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #fff !important;
-            }
-
-            body * {
-                visibility: hidden !important;
-            }
-
-            #receiptOverlay,
-            #receiptFinalPaper,
-            #receiptFinalPaper * {
-                visibility: visible !important;
-            }
-
-            #receiptOverlay {
-                position: static !important;
-                inset: auto !important;
                 display: block !important;
                 width: 3in !important;
-                max-width: 3in !important;
+                min-width: 0 !important;
+                height: auto !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 overflow: visible !important;
                 background: #fff !important;
             }
 
-            #receiptFinalPaper {
+            body > * {
+                display: none !important;
+            }
+
+            body > #receiptOverlay {
                 display: block !important;
+                position: static !important;
+                inset: auto !important;
+                width: 3in !important;
+                max-width: 3in !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                background: #fff !important;
+                z-index: auto !important;
+            }
+
+            #receiptOverlay * {
+                visibility: visible !important;
+            }
+
+            #receiptOverlay #receiptPrinterStage,
+            #receiptOverlay .receipt-printer-stage,
+            #receiptOverlay .receipt-actions,
+            #receiptOverlay #closeReceipt {
+                display: none !important;
+            }
+
+            #receiptOverlay #receiptFinalPaper {
+                display: block !important;
+                visibility: visible !important;
                 position: static !important;
                 width: 3in !important;
                 max-width: 3in !important;
                 min-width: 0 !important;
                 height: auto !important;
                 max-height: none !important;
-                box-sizing: border-box !important;
-                overflow: visible !important;
                 margin: 0 !important;
                 padding: 0.12in !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                opacity: 1 !important;
+                transform: none !important;
                 border: 0 !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
+                background: #fff !important;
+                color: #000 !important;
                 clip-path: none !important;
                 animation: none !important;
                 page-break-inside: auto !important;
@@ -991,18 +1007,13 @@
             }
 
             #receiptFinalPaper * {
+                visibility: visible !important;
                 color: #000 !important;
                 background: transparent !important;
                 box-shadow: none !important;
                 text-shadow: none !important;
                 animation: none !important;
                 overflow-wrap: anywhere !important;
-            }
-
-            .receipt-actions,
-            .receipt-printer-stage,
-            #closeReceipt {
-                display: none !important;
             }
         }
 
