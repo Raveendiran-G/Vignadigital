@@ -905,8 +905,14 @@
         }
 
         @media print {
+            /* PDF / POS receipt only: exactly 3 inches wide */
+            @page {
+                size: 3in auto;
+                margin: 0;
+            }
+
             html, body {
-                width: 72mm !important;
+                width: 3in !important;
                 min-width: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
@@ -927,7 +933,8 @@
                 position: static !important;
                 inset: auto !important;
                 display: block !important;
-                width: 72mm !important;
+                width: 3in !important;
+                max-width: 3in !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 overflow: visible !important;
@@ -937,15 +944,15 @@
             #receiptFinalPaper {
                 display: block !important;
                 position: static !important;
-                width: 72mm !important;
-                max-width: 72mm !important;
+                width: 3in !important;
+                max-width: 3in !important;
                 min-width: 0 !important;
-                max-height: none !important;
                 height: auto !important;
+                max-height: none !important;
                 box-sizing: border-box !important;
                 overflow: visible !important;
                 margin: 0 !important;
-                padding: 3mm !important;
+                padding: 0.12in !important;
                 border: 0 !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
@@ -956,27 +963,31 @@
 
             #receiptFinalPaper .receipt-table-head,
             #receiptFinalPaper .receipt-row {
-                grid-template-columns: minmax(0, 1fr) 18px 31px 35px !important;
-                gap: 2px !important;
-                font-size: 8px !important;
+                grid-template-columns: minmax(0, 1fr) 0.18in 0.34in 0.38in !important;
+                gap: 0.02in !important;
+                font-size: 8pt !important;
                 padding: 3px 0 !important;
             }
 
             #receiptFinalPaper .receipt-meta,
             #receiptFinalPaper .receipt-summary,
             #receiptFinalPaper .receipt-foot {
-                font-size: 8px !important;
+                font-size: 8pt !important;
             }
 
             #receiptFinalPaper .receipt-meta .meta-line {
-                grid-template-columns: 56px 5px minmax(0, 1fr) !important;
-                gap: 2px !important;
+                grid-template-columns: 0.58in 0.05in minmax(0, 1fr) !important;
+                gap: 0.02in !important;
             }
 
-            #receiptFinalPaper .receipt-summary-line,
+            #receiptFinalPaper .receipt-summary-line {
+                font-size: 8pt !important;
+                gap: 0.06in !important;
+            }
+
             #receiptFinalPaper .receipt-total {
-                font-size: 10px !important;
-                gap: 6px !important;
+                font-size: 10pt !important;
+                gap: 0.06in !important;
             }
 
             #receiptFinalPaper * {
@@ -992,11 +1003,6 @@
             .receipt-printer-stage,
             #closeReceipt {
                 display: none !important;
-            }
-
-            @page {
-                size: 72mm auto;
-                margin: 0;
             }
         }
 
