@@ -578,12 +578,13 @@
 
         .receipt-paper {
             position: relative;
-            width: min(100%, 360px);
+            width: min(100%, 72mm);
+            box-sizing: border-box;
             max-height: 90%;
             overflow: auto;
             background: #fffdf7;
             color: #29241f;
-            padding: 22px 20px 25px;
+            padding: 4mm 3mm 5mm;
             box-shadow: 0 18px 55px #0007;
             font-family: Arial, Helvetica, sans-serif;
             transform-origin: top center;
@@ -661,10 +662,10 @@
         .receipt-table-head,
         .receipt-row {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 28px 48px 48px;
-            gap: 4px;
+            grid-template-columns: minmax(0, 1fr) 20px 34px 38px;
+            gap: 2px;
             align-items: start;
-            font-size: 10px;
+            font-size: 9px;
             padding: 5px 0
         }
 
@@ -904,36 +905,99 @@
         }
 
         @media print {
-            body * {
-                visibility: hidden !important
+            html, body {
+                width: 72mm !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
             }
 
+            body * {
+                visibility: hidden !important;
+            }
+
+            #receiptOverlay,
             #receiptFinalPaper,
             #receiptFinalPaper * {
-                visibility: visible !important
+                visibility: visible !important;
+            }
+
+            #receiptOverlay {
+                position: static !important;
+                inset: auto !important;
+                display: block !important;
+                width: 72mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: #fff !important;
             }
 
             #receiptFinalPaper {
                 display: block !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                max-height: none;
-                overflow: visible;
-                box-shadow: none;
-                animation: none
+                position: static !important;
+                width: 72mm !important;
+                max-width: 72mm !important;
+                min-width: 0 !important;
+                max-height: none !important;
+                height: auto !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                margin: 0 !important;
+                padding: 3mm !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                clip-path: none !important;
+                animation: none !important;
+                page-break-inside: auto !important;
             }
 
-            .receipt-actions {
-                display: none !important
+            #receiptFinalPaper .receipt-table-head,
+            #receiptFinalPaper .receipt-row {
+                grid-template-columns: minmax(0, 1fr) 18px 31px 35px !important;
+                gap: 2px !important;
+                font-size: 8px !important;
+                padding: 3px 0 !important;
             }
 
-            .receipt-overlay { position: absolute; background: white; display: block !important; padding: 0; inset: 0; }
-            .receipt-printer-stage, .receipt-actions, #closeReceipt { display: none !important; }
-            #receiptFinalPaper { width: 80mm !important; max-width: 80mm !important; margin: 0 auto !important; padding: 8mm !important; border: 0 !important; border-radius: 0 !important; }
-            #receiptFinalPaper * { color: #000 !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; animation: none !important; }
-            @page { margin: 8mm; }
+            #receiptFinalPaper .receipt-meta,
+            #receiptFinalPaper .receipt-summary,
+            #receiptFinalPaper .receipt-foot {
+                font-size: 8px !important;
+            }
+
+            #receiptFinalPaper .receipt-meta .meta-line {
+                grid-template-columns: 56px 5px minmax(0, 1fr) !important;
+                gap: 2px !important;
+            }
+
+            #receiptFinalPaper .receipt-summary-line,
+            #receiptFinalPaper .receipt-total {
+                font-size: 10px !important;
+                gap: 6px !important;
+            }
+
+            #receiptFinalPaper * {
+                color: #000 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                animation: none !important;
+                overflow-wrap: anywhere !important;
+            }
+
+            .receipt-actions,
+            .receipt-printer-stage,
+            #closeReceipt {
+                display: none !important;
+            }
+
+            @page {
+                size: 72mm auto;
+                margin: 0;
+            }
         }
 
         .receipt-total {
@@ -981,21 +1045,6 @@
       }
       #orderStatusToast .order-status-close:hover{background:rgba(113,59,11,.1)}
       #orderStatusToast .order-status-icon,#orderStatusToast .order-status-title{display:none}
-      #orderStatusToast.status-sent .order-status-dialog{
-        background:#fff4e8;color:#713b0b;border-color:#f4b36c;border-left-color:#e8761f
-      }
-      #orderStatusToast.status-active .order-status-dialog{
-        background:#eaf3ff;color:#174a8b;border-color:#9bc5ff;border-left-color:#2878d0
-      }
-      #orderStatusToast.status-prepared .order-status-dialog{
-        background:#e9f9ef;color:#176536;border-color:#9ad8ae;border-left-color:#239653
-      }
-      #orderStatusToast.status-accepted .order-status-dialog{
-        background:#eef9f0;color:#1f6b38;border-color:#a6ddb3;border-left-color:#29964a
-      }
-      #orderStatusToast.status-cancelled .order-status-dialog{
-        background:#fff0f0;color:#8b1e1e;border-color:#f2aaaa;border-left-color:#d93636
-      }
       #orderStatusToast .order-status-message{
         margin:0;font-size:13px;font-weight:650;line-height:1.35;
         white-space:normal;overflow-wrap:anywhere
@@ -1193,21 +1242,6 @@
             if (titleNode) titleNode.textContent = title;
             if (messageNode) messageNode.textContent = message;
             if (iconNode) iconNode.textContent = icon;
-
-            popup.classList.remove("status-sent", "status-active", "status-prepared", "status-accepted", "status-cancelled");
-            const statusText = `${title} ${message}`.toLowerCase();
-            if (statusText.includes("prepared")) {
-                popup.classList.add("status-prepared");
-            } else if (statusText.includes("active")) {
-                popup.classList.add("status-active");
-            } else if (statusText.includes("cancelled") || statusText.includes("canceled")) {
-                popup.classList.add("status-cancelled");
-            } else if (statusText.includes("accepted")) {
-                popup.classList.add("status-accepted");
-            } else {
-                popup.classList.add("status-sent");
-            }
-
             popup.style.display = "flex";
             popup.setAttribute("aria-hidden", "false");
         }
@@ -1217,21 +1251,19 @@
             if (toast) toast.style.display = "none";
             document.body.style.overflow = "";
         }
-        // Event delegation works even though the popup HTML appears after this script.
-        // Only clicking the × button dismisses the notification.
-        document.addEventListener("click", (event) => {
-            const closeButton = event.target.closest("#orderStatusClose");
-            if (!closeButton) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const popup = document.getElementById("orderStatusToast");
-            if (popup) {
-                popup.style.display = "none";
-                popup.setAttribute("aria-hidden", "true");
-            }
-        });
+        // Only the top-right × button dismisses the notification.
+        const orderStatusCloseButton = $("orderStatusClose");
+        if (orderStatusCloseButton) {
+            orderStatusCloseButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const popup = $("orderStatusToast");
+                if (popup) {
+                    popup.style.display = "none";
+                    popup.setAttribute("aria-hidden", "true");
+                }
+            });
+        }
 
         function startOrderStatusTracking(orderId, orderNumber) {
             if (!orderId) return;
