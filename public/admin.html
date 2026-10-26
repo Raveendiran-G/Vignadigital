@@ -2060,7 +2060,7 @@
       <div class="feature-actions"><button type="button" class="primary" id="generateAiMenu">Generate Menu</button><button type="button" class="primary" id="saveAiMenu" disabled>Save Selected Items</button></div><p class="feature-status" id="aiMenuStatus" role="status"></p><div id="aiMenuPreview"></div>
     </section></div>
     <div class="feature-modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle"><section class="feature-panel">
-      <button class="feature-close" type="button" data-close-feature="ordersModal">Close ✕</button><h2 id="ordersTitle">🧾 Orders / Print Bills</h2><p>Only orders available to your authenticated admin session are shown here.</p><div class="feature-actions"><button type="button" class="primary" id="refreshOrders">Refresh Orders</button></div><p class="feature-status" id="ordersStatus" role="status"></p><div id="ordersList"></div>
+      <button class="feature-close" type="button" data-close-feature="ordersModal">Close ✕</button><h2 id="ordersTitle">🧾 Orders / Print Bills</h2><p>Only orders available to your authenticated admin session are shown here.</p><div class="feature-actions"><button type="button" class="primary" id="refreshOrders">Refresh Orders</button><button type="button" id="downloadPastOrdersPdf">Download All Past Orders as PDF</button><button type="button" id="deleteOldOrders" style="background:#b91c1c;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700">Delete Orders Older Than 15 Days</button></div><p class="feature-status" id="ordersStatus" role="status"></p><div id="ordersList"></div>
     </section></div>
     <div id="adminPrintArea" style="display:none"></div>
     <script>
@@ -2095,6 +2095,46 @@
         }catch(e){$("aiMenuStatus").textContent=`Saved ${saved} item(s). ${e.message}`;$("saveAiMenu").disabled=false;}
       });
       $("refreshOrders").addEventListener("click",loadOrders);
+      $("downloadPastOrdersPdf").addEventListener("click", async () => {
+        const status = $("ordersStatus");
+        const button = $("downloadPastOrdersPdf");
+        button.disabled = true; status.textContent = "Preparing past-orders report…";
+        try {
+          const response = await fetch("/api/admin/orders/export", { credentials:"same-origin", cache:"no-store" });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.message || "Could not export orders.");
+          const orders = payload.orders || [];
+          const escPdf = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+          const moneyPdf = n => "₹" + Number(n || 0).toFixed(2);
+          const rows = orders.map(o => {
+            let items = o.items;
+            if (typeof items === "string") { try { items = JSON.parse(items); } catch (_) {} }
+            const itemText = Array.isArray(items) ? items.map(i => `${i.name || i.title || i.item_name || "Item"} × ${i.quantity || i.qty || 1}`).join(", ") : (items && typeof items === "object" ? JSON.stringify(items) : String(items || ""));
+            return `<tr><td>${escPdf(o.order_number || o.id)}</td><td>${escPdf(new Date(o.created_at).toLocaleString("en-IN"))}</td><td>${escPdf(o.customer_name)}</td><td>${escPdf(o.restaurant_slug)}</td><td>${escPdf(itemText)}</td><td>${escPdf(o.status)}</td><td>${escPdf(moneyPdf(o.total_amount))}</td></tr>`;
+          }).join("");
+          const w = window.open("", "_blank");
+          if (!w) throw new Error("Allow pop-ups for this admin page to generate the PDF.");
+          w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Vigna Digital - Past Orders</title><style>body{font:12px Arial,sans-serif;color:#222;padding:20px}h1{font-size:20px}p{color:#555}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eee} @media print{button{display:none}body{padding:0}}</style></head><body><h1>Vigna Digital — Past Orders</h1><p>Generated: ${escPdf(new Date().toLocaleString("en-IN"))} · Total orders: ${orders.length}</p><button onclick="window.print()">Print / Save as PDF</button><table><thead><tr><th>Order</th><th>Date</th><th>Customer</th><th>Restaurant</th><th>Items</th><th>Status</th><th>Total</th></tr></thead><tbody>${rows || '<tr><td colspan="7">No past orders found.</td></tr>'}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
+          w.document.close();
+          status.textContent = `Prepared PDF report for ${orders.length} orders. Choose Save as PDF in the print dialog.`;
+        } catch (error) { status.textContent = error.message; }
+        finally { button.disabled = false; }
+      });
+      $("deleteOldOrders").addEventListener("click", async () => {
+        const cutoff = new Date(Date.now() - 15*24*60*60*1000);
+        if (!confirm(`Permanently delete every order created before ${cutoff.toLocaleString()} (older than 15 days)? This cannot be undone. Download a PDF backup first if needed.`)) return;
+        const button = $("deleteOldOrders"), status = $("ordersStatus");
+        button.disabled = true; status.textContent = "Deleting old orders…";
+        try {
+          const response = await fetch("/api/admin/orders/delete-expired", { method:"POST", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:"{}" });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.message || "Deletion failed.");
+          status.textContent = `Permanently deleted ${payload.deleted} order(s) older than 15 days.`;
+          await loadOrders();
+        } catch (error) { status.textContent = error.message; }
+        finally { button.disabled = false; }
+      });
+
       async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders",{credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>{const current=String(o.status||"new").toLowerCase();const activeDisabled=["preparing","completed","cancelled"].includes(current);const preparedDisabled=["completed","cancelled"].includes(current);return `<div class="order-preview-row"><div><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>Status: ${esc(current)}</small></div><div class="order-actions"><div class="order-actions-top"><button type="button" data-order-status="active" data-order-id="${esc(o.id)}" ${activeDisabled?"disabled":""}>Active</button><button type="button" data-order-status="prepared" data-order-id="${esc(o.id)}" ${preparedDisabled?"disabled":""}>Prepared</button></div><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div></div>`;}).join("");d.orders.forEach(o=>{list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`)?.addEventListener("click",()=>printOrder(o));list.querySelectorAll(`[data-order-id="${CSS.escape(String(o.id))}"]`).forEach(button=>button.addEventListener("click",async()=>{const next=button.dataset.orderStatus;button.disabled=true;try{const update=await fetch(`/api/admin/orders/${encodeURIComponent(o.id)}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({status:next})});const result=await update.json();if(!update.ok)throw new Error(result.message||"Status update failed");$("ordersStatus").textContent=`${o.order_number||o.id} updated to ${result.order.status}.`;await loadOrders();}catch(error){$("ordersStatus").textContent=error.message;button.disabled=false;}}));});}catch(e){status.textContent=e.message;}}
       function printOrder(o){const items=Array.isArray(o.items)?o.items:[];const subtotal=Number(o.subtotal_amount??items.reduce((s,i)=>s+Number(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0)),0));const tax=Number(o.tax_amount??Math.round(subtotal*0.05*100)/100);const location=o.order_type==="Dine In"?`Table Number: ${o.table_number||"—"}`:o.order_type==="Room Service"?`Room Number: ${o.room_number||"—"}`:o.order_type==="Delivery"?`Delivery Address: ${o.delivery_address||"—"}`:"Takeaway";const area=$("adminPrintArea");area.innerHTML=`<article class="bill-print"><h2>NEW DESI TADKA</h2><p>ORDER RECEIPT</p><hr><p>Order: ${esc(o.order_number||o.id)}<br>Date: ${esc(o.created_at?new Date(o.created_at).toLocaleString("en-IN"):"")}<br>Customer: ${esc(o.customer_name)}<br>Phone: ${esc(o.customer_phone)}<br>Order Type: ${esc(o.order_type||"Takeaway")}<br>${esc(location)}</p><table><thead><tr><th>Item</th><th>Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td>${Number(i.quantity||0)}</td><td class="right">${money(i.unitPrice)}</td><td class="right">${money(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0))}</td></tr>`).join("")}</tbody></table><p style="text-align:right">Subtotal: ${money(subtotal)}<br>Tax: ${money(tax)}<br><strong>TOTAL: ${money(o.total_amount)}</strong></p><hr><p>Thank you for ordering!</p></article>`;area.style.display="block";document.body.classList.add("printing-bill");window.print();setTimeout(()=>{document.body.classList.remove("printing-bill");area.style.display="none";},500);}
     })();

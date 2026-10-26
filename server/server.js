@@ -2003,6 +2003,79 @@ app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     }
 });
 
+app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("restaurant_orders")
+            .select("id,order_number,restaurant_slug,customer_name,customer_phone,customer_email,order_type,table_number,room_number,delivery_address,delivery_city,delivery_pincode,items,subtotal_amount,tax_amount,total_amount,status,notes,created_at")
+            .order("created_at", { ascending: false })
+            .limit(100);
+
+        if (error) {
+            if (error.code === "42703") {
+                return res.status(500).json({
+                    message: "Run the provided orders-schema.sql migration first."
+                });
+            }
+            throw error;
+        }
+
+        res.setHeader("Cache-Control", "no-store");
+        res.json({ orders: data || [] });
+
+    } catch (error) {
+        console.error("Admin orders load failed:", error);
+        console.error("Underlying cause:", error.cause || "No additional cause provided");
+
+        res.status(500).json({
+            message: "Could not load orders."
+        });
+    }
+});
+
+
+// Admin: export all past orders (used by the admin PDF export button).
+app.get("/api/admin/orders/export", requireAdmin, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("restaurant_orders")
+            .select("id,order_number,restaurant_slug,customer_name,customer_phone,customer_email,order_type,table_number,room_number,delivery_address,delivery_city,delivery_pincode,items,subtotal_amount,tax_amount,total_amount,status,notes,created_at")
+            .order("created_at", { ascending: false });
+        if (error) throw error;
+        res.setHeader("Cache-Control", "no-store");
+        res.json({ orders: data || [] });
+    } catch (error) {
+        console.error("Admin order export failed:", error);
+        res.status(500).json({ message: "Could not export past orders." });
+    }
+});
+
+// Admin: permanently delete orders older than 15 days.
+app.post("/api/admin/orders/delete-expired", requireAdmin, async (req, res) => {
+    try {
+        const cutoff = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+
+        // Count eligible rows first so the admin can see the result.
+        const { count, error: countError } = await supabase
+            .from("restaurant_orders")
+            .select("id", { count: "exact", head: true })
+            .lt("created_at", cutoff);
+        if (countError) throw countError;
+
+        const { error: deleteError } = await supabase
+            .from("restaurant_orders")
+            .delete()
+            .lt("created_at", cutoff);
+        if (deleteError) throw deleteError;
+
+        res.setHeader("Cache-Control", "no-store");
+        res.json({ success: true, deleted: count || 0, cutoff });
+    } catch (error) {
+        console.error("Admin expired-order deletion failed:", error);
+        res.status(500).json({ message: "Could not delete expired orders." });
+    }
+});
+
 // ========================================
 // START SERVER
 // ========================================
