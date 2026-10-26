@@ -667,6 +667,23 @@
   @media(max-width:480px) {
     #newOrderPopup { bottom:10px !important; right:10px !important; max-width:calc(100vw - 20px) !important; }
   }
+  /* Round all four corners of the Orders / Print Bills modal */
+#ordersModal {
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    clip-path: inset(0 round 18px);
+}
+
+/* Keep the modal's scrolling content inside the rounded edges */
+#ordersModal .modal-content {
+    border-radius: 18px !important;
+}
+
+/* Preserve scrolling without square corners */
+#ordersModal .orders-list {
+    overflow-y: auto;
+    border-radius: 0 0 18px 18px;
+}
 </style>
 
 
