@@ -648,14 +648,174 @@
     </script>
 
 
-<style id="order-action-button-style">
-.order-preview-row .order-actions{display:flex;gap:8px;flex-wrap:nowrap;align-items:center;justify-content:flex-end}
-.order-preview-row .order-actions button{border:0;border-radius:7px;padding:9px 13px;font-weight:700;cursor:pointer;min-height:38px;white-space:nowrap}
-.order-preview-row .order-actions button[data-order-status="active"]{background:#2563eb;color:#fff}
-.order-preview-row .order-actions button[data-order-status="prepared"]{background:#15803d;color:#fff}
-.order-preview-row .order-actions button[data-print-order]{background:#f1f5f9;color:#1e293b;border:1px solid #cbd5e1}
-.order-preview-row .order-actions button:disabled{opacity:.45;cursor:not-allowed}
-@media(max-width:700px){.order-preview-row .order-actions{justify-content:flex-start;grid-column:1/-1;flex-wrap:wrap}}
+
+
+
+<style id="new-order-notification-styles">
+#ordersPrintBillsButton{position:relative!important}
+#newOrderRedDot{display:none;position:absolute;top:-5px;right:-5px;width:12px;height:12px;border-radius:50%;background:#ef233c;border:2px solid #fff;box-shadow:0 0 0 1px #ddd;z-index:9}
+#newOrderRedDot.is-visible{display:block;animation:vignaDotPulse 1.2s infinite}
+@keyframes vignaDotPulse{50%{transform:scale(1.2)}}
+#newOrderPopup{position:fixed;bottom:20px;right:20px;top:auto;left:auto;z-index:100000;display:none;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:14px 42px 14px 16px;border-radius:12px;color:#7f1d1d;background:#fff1f2;border:1px solid #fecdd3;border-left:5px solid #ef233c;box-shadow:0 12px 34px #0002;font:600 14px/1.4 system-ui,sans-serif}
+#newOrderPopup.is-visible{display:flex}
+#newOrderPopup .new-order-popup-close{position:absolute;top:4px;right:6px;width:30px;height:30px;border:0;background:transparent;color:#7f1d1d;font-size:22px;cursor:pointer}
+.new-order-popup-title{display:block;font-weight:800;margin-bottom:2px}
+</style>
+
+<style id="admin-bottom-popup-override">
+  #newOrderPopup { top:auto !important; bottom:20px !important; right:20px !important; left:auto !important; }
+  @media(max-width:480px) {
+    #newOrderPopup { bottom:10px !important; right:10px !important; max-width:calc(100vw - 20px) !important; }
+  }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<style id="order-actions-requested-layout">
+  #ordersList .order-preview-row {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 190px !important;
+    grid-template-rows:auto auto auto !important;
+    column-gap:14px !important;
+    row-gap:5px !important;
+    align-items:start !important;
+    padding:12px !important;
+    border-radius:10px !important;
+  }
+  #ordersList .order-preview-row > div:first-child {
+    grid-column:1 !important; grid-row:1 !important; min-width:0 !important;
+  }
+  #ordersList .order-preview-row > div:nth-child(2) {
+    grid-column:1 !important; grid-row:2 !important; min-width:0 !important;
+  }
+  #ordersList .order-preview-row > button[data-order-status="active"],
+  #ordersList .order-preview-row > button[data-order-status="prepared"],
+  #ordersList .order-preview-row > button[data-print-order] {
+    min-width:0 !important;
+    width:100% !important;
+    min-height:32px !important;
+    margin:0 !important;
+    padding:7px 9px !important;
+    border:1px solid transparent !important;
+    border-radius:7px !important;
+    color:#fff !important;
+    font:600 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif !important;
+    box-shadow:none !important;
+    cursor:pointer !important;
+  }
+  /* Active | Print Bill on the first action row */
+  #ordersList .order-preview-row > button[data-order-status="active"] {
+    grid-column:2 !important; grid-row:1 !important;
+    width:calc(50% - 4px) !important;
+    justify-self:start !important;
+    background:#198754 !important; border-color:#198754 !important;
+  }
+  #ordersList .order-preview-row > button[data-print-order] {
+    grid-column:2 !important; grid-row:1 !important;
+    width:calc(50% - 4px) !important;
+    justify-self:end !important;
+    background:#475569 !important; border-color:#475569 !important;
+  }
+  /* Prepared below Active | Print Bill */
+  #ordersList .order-preview-row > button[data-order-status="prepared"] {
+    grid-column:2 !important; grid-row:2 !important;
+    background:#2563eb !important; border-color:#2563eb !important;
+  }
+  #ordersList .order-preview-row > button:hover { filter:brightness(.93) !important; }
+  @media(max-width:560px) {
+    #ordersList .order-preview-row {
+      grid-template-columns:minmax(0,1fr) 160px !important;
+      column-gap:8px !important;
+    }
+    #ordersList .order-preview-row > button[data-order-status="active"],
+    #ordersList .order-preview-row > button[data-print-order] {
+      font-size:11px !important; padding:7px 5px !important;
+    }
+  }
+</style>
+
+
+
+
+
+
+
+
+<style id="colourful-order-actions-final">
+  #ordersList .order-preview-row .order-actions {
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  #ordersList .order-preview-row .order-actions-top {
+    display:grid !important;
+    grid-template-columns:1fr 1.2fr !important;
+    gap:8px !important;
+    width:100% !important;
+  }
+  #ordersList .order-preview-row .order-actions button {
+    box-sizing:border-box !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:40px !important;
+    padding:9px 12px !important;
+    border:1px solid transparent !important;
+    border-radius:9px !important;
+    color:#fff !important;
+    font:600 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif !important;
+    letter-spacing:.15px !important;
+    box-shadow:0 2px 5px rgba(15,23,42,.12) !important;
+    text-align:center !important;
+    cursor:pointer !important;
+    transition:transform .16s ease,filter .16s ease,box-shadow .16s ease !important;
+  }
+  #ordersList .order-preview-row .order-actions button:hover:not(:disabled) {
+    filter:brightness(1.06) !important;
+    transform:translateY(-1px) !important;
+    box-shadow:0 4px 9px rgba(15,23,42,.16) !important;
+  }
+  #ordersList .order-preview-row .order-actions button:active:not(:disabled) {
+    transform:translateY(0) !important;
+  }
+  #ordersList .order-preview-row .order-actions button[data-order-status="active"] {
+    background:linear-gradient(135deg,#16a34a,#15803d) !important;
+    border-color:#15803d !important;
+    color:#fff !important;
+  }
+  #ordersList .order-preview-row .order-actions button[data-order-status="prepared"] {
+    background:linear-gradient(135deg,#3b82f6,#1d4ed8) !important;
+    border-color:#1d4ed8 !important;
+    color:#fff !important;
+  }
+  #ordersList .order-preview-row .order-actions button[data-print-order] {
+    background:linear-gradient(135deg,#475569,#334155) !important;
+    border-color:#334155 !important;
+    color:#fff !important;
+    min-height:42px !important;
+  }
+  #ordersList .order-preview-row .order-actions button:disabled {
+    opacity:.58 !important;
+    cursor:not-allowed !important;
+    box-shadow:none !important;
+  }
+  @media(max-width:560px) {
+    #ordersList .order-preview-row .order-actions-top { gap:6px !important; }
+    #ordersList .order-preview-row .order-actions button {
+      min-height:36px !important;
+      padding:8px 5px !important;
+      font-size:11px !important;
+    }
+  }
 </style>
 
 </head>
@@ -733,8 +893,7 @@
                 <button class="primary" onclick="openAdd()">
                     + Add Item
                 </button>
-                <button class="primary" type="button" id="openAiMenu">✨ AI Menu</button>
-                <button class="primary" type="button" id="openOrders">🧾 Orders / Print Bills</button>
+                <button class="primary" type="button" id="ordersPrintBillsButton">🧾 Orders / Print Bills<span id="newOrderRedDot" aria-label="New order"></span></button>
 
                 <button class="logout" onclick="logout()">
                     Logout
@@ -1891,7 +2050,7 @@
       .feature-modal{display:none;position:fixed;inset:0;background:#0008;z-index:9999;align-items:center;justify-content:center;padding:16px}
       .feature-modal.show{display:flex}.feature-panel{background:#fff;border-radius:16px;padding:22px;width:min(900px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0003}
       .feature-panel h2{margin-top:0}.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feature-grid label{display:block;font-weight:600;font-size:13px}.feature-grid input,.feature-grid select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px}
-      .feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ai-preview-row,.order-preview-row{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:10px;display:grid;grid-template-columns:minmax(0,2fr) minmax(100px,1fr);gap:8px;align-items:center}.order-preview-row .order-actions{grid-column:1/-1}.ai-preview-row input,.ai-preview-row select{width:100%;padding:8px;border:1px solid #ddd;border-radius:7px}.feature-status{margin-top:10px;color:#7b3422}.feature-close{float:right}.bill-print{font-family:Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:760px;margin:auto}.bill-print h2,.bill-print p{text-align:center}.bill-print table{width:100%;border-collapse:collapse}.bill-print th,.bill-print td{padding:8px;border-bottom:1px dashed #aaa;text-align:left}.bill-print .right{text-align:right}
+      .feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ai-preview-row,.order-preview-row{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:10px;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center}.ai-preview-row input,.ai-preview-row select{width:100%;padding:8px;border:1px solid #ddd;border-radius:7px}.feature-status{margin-top:10px;color:#7b3422}.feature-close{float:right}.bill-print{font-family:Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:760px;margin:auto}.bill-print h2,.bill-print p{text-align:center}.bill-print table{width:100%;border-collapse:collapse}.bill-print th,.bill-print td{padding:8px;border-bottom:1px dashed #aaa;text-align:left}.bill-print .right{text-align:right}
       @media(max-width:650px){.feature-grid{grid-template-columns:1fr}.ai-preview-row,.order-preview-row{grid-template-columns:1fr}}
       @media print{body.printing-bill *{visibility:hidden!important}body.printing-bill #adminPrintArea,body.printing-bill #adminPrintArea *{visibility:visible!important}body.printing-bill #adminPrintArea{position:absolute;inset:0;width:100%;display:block!important}body.printing-bill .feature-modal{display:none!important}}
     </style>
@@ -1910,8 +2069,14 @@
       const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       const money = n => "₹" + Number(n || 0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
       const open = id => $(id).classList.add("show"); const close = id => $(id).classList.remove("show");
-      document.getElementById("openAiMenu")?.addEventListener("click",()=>open("aiMenuModal"));
-      document.getElementById("openOrders")?.addEventListener("click",()=>{open("ordersModal");loadOrders();});
+      document.getElementById("ordersPrintBillsButton")?.addEventListener("click",()=>{
+        open("ordersModal");
+        loadOrders();
+        const dot = document.getElementById("newOrderRedDot");
+        if (dot) dot.classList.remove("is-visible");
+        const popup = document.getElementById("newOrderPopup");
+        if (popup) popup.classList.remove("is-visible");
+      });
       document.querySelectorAll("[data-close-feature]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeFeature)));
       document.querySelectorAll(".feature-modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)close(m.id)}));
       $("generateAiMenu").addEventListener("click", async()=>{
@@ -1930,10 +2095,66 @@
         }catch(e){$("aiMenuStatus").textContent=`Saved ${saved} item(s). ${e.message}`;$("saveAiMenu").disabled=false;}
       });
       $("refreshOrders").addEventListener("click",loadOrders);
-      async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders",{credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>{const current=String(o.status||"new").toLowerCase();const activeDisabled=["preparing","completed","cancelled"].includes(current);const preparedDisabled=["completed","cancelled"].includes(current);return `<div class="order-preview-row"><div><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>Status: ${esc(current)}</small></div><div class="order-actions"><button type="button" data-order-status="active" data-order-id="${esc(o.id)}" ${activeDisabled?"disabled":""}>Active</button><button type="button" data-order-status="prepared" data-order-id="${esc(o.id)}" ${preparedDisabled?"disabled":""}>Prepared</button><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div></div>`;}).join("");d.orders.forEach(o=>{list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`)?.addEventListener("click",()=>printOrder(o));list.querySelectorAll(`[data-order-id="${CSS.escape(String(o.id))}"]`).forEach(button=>button.addEventListener("click",async()=>{const next=button.dataset.orderStatus;button.disabled=true;try{const update=await fetch(`/api/admin/orders/${encodeURIComponent(o.id)}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({status:next})});const result=await update.json();if(!update.ok)throw new Error(result.message||"Status update failed");$("ordersStatus").textContent=`${o.order_number||o.id} updated to ${result.order.status}.`;await loadOrders();}catch(error){$("ordersStatus").textContent=error.message;button.disabled=false;}}));});}catch(e){status.textContent=e.message;}}
+      async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders",{credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>{const current=String(o.status||"new").toLowerCase();const activeDisabled=["preparing","completed","cancelled"].includes(current);const preparedDisabled=["completed","cancelled"].includes(current);return `<div class="order-preview-row"><div><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>Status: ${esc(current)}</small></div><div class="order-actions"><div class="order-actions-top"><button type="button" data-order-status="active" data-order-id="${esc(o.id)}" ${activeDisabled?"disabled":""}>Active</button><button type="button" data-order-status="prepared" data-order-id="${esc(o.id)}" ${preparedDisabled?"disabled":""}>Prepared</button></div><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div></div>`;}).join("");d.orders.forEach(o=>{list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`)?.addEventListener("click",()=>printOrder(o));list.querySelectorAll(`[data-order-id="${CSS.escape(String(o.id))}"]`).forEach(button=>button.addEventListener("click",async()=>{const next=button.dataset.orderStatus;button.disabled=true;try{const update=await fetch(`/api/admin/orders/${encodeURIComponent(o.id)}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({status:next})});const result=await update.json();if(!update.ok)throw new Error(result.message||"Status update failed");$("ordersStatus").textContent=`${o.order_number||o.id} updated to ${result.order.status}.`;await loadOrders();}catch(error){$("ordersStatus").textContent=error.message;button.disabled=false;}}));});}catch(e){status.textContent=e.message;}}
       function printOrder(o){const items=Array.isArray(o.items)?o.items:[];const subtotal=Number(o.subtotal_amount??items.reduce((s,i)=>s+Number(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0)),0));const tax=Number(o.tax_amount??Math.round(subtotal*0.05*100)/100);const location=o.order_type==="Dine In"?`Table Number: ${o.table_number||"—"}`:o.order_type==="Room Service"?`Room Number: ${o.room_number||"—"}`:o.order_type==="Delivery"?`Delivery Address: ${o.delivery_address||"—"}`:"Takeaway";const area=$("adminPrintArea");area.innerHTML=`<article class="bill-print"><h2>NEW DESI TADKA</h2><p>ORDER RECEIPT</p><hr><p>Order: ${esc(o.order_number||o.id)}<br>Date: ${esc(o.created_at?new Date(o.created_at).toLocaleString("en-IN"):"")}<br>Customer: ${esc(o.customer_name)}<br>Phone: ${esc(o.customer_phone)}<br>Order Type: ${esc(o.order_type||"Takeaway")}<br>${esc(location)}</p><table><thead><tr><th>Item</th><th>Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td>${Number(i.quantity||0)}</td><td class="right">${money(i.unitPrice)}</td><td class="right">${money(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0))}</td></tr>`).join("")}</tbody></table><p style="text-align:right">Subtotal: ${money(subtotal)}<br>Tax: ${money(tax)}<br><strong>TOTAL: ${money(o.total_amount)}</strong></p><hr><p>Thank you for ordering!</p></article>`;area.style.display="block";document.body.classList.add("printing-bill");window.print();setTimeout(()=>{document.body.classList.remove("printing-bill");area.style.display="none";},500);}
     })();
     </script>
+
+
+<div id="newOrderPopup" role="status" aria-live="assertive">
+<button type="button" class="new-order-popup-close" id="newOrderPopupClose" aria-label="Close notification">×</button>
+<span aria-hidden="true" style="font-size:24px">🧾</span>
+<span><span class="new-order-popup-title">New order received!</span><span id="newOrderPopupMessage">A new customer order has arrived.</span></span>
+</div>
+
+<script id="new-order-notification-script">
+(() => {
+ if (window.__vignaNewOrderNotificationsStarted) return;
+ window.__vignaNewOrderNotificationsStarted = true;
+ const popup=document.getElementById('newOrderPopup');
+ const message=document.getElementById('newOrderPopupMessage');
+ const close=document.getElementById('newOrderPopupClose');
+ const dot=document.getElementById('newOrderRedDot');
+ const ordersButton=document.getElementById('ordersPrintBillsButton');
+ if(!popup) return;
+ let known=new Set(), initialized=false, busy=false;
+ const setDot=v=>dot&&dot.classList.toggle('is-visible',v);
+ const show=order=>{
+   const no=order.order_number||order.orderNumber||order.id||'';
+   if(message) message.textContent=no?`Order ${no} has arrived. Open Orders / Print Bills to view it.`:'A new customer order has arrived. Open Orders / Print Bills to view it.';
+   popup.classList.add('is-visible');
+ };
+ const getOrders=p=>Array.isArray(p)?p:(p&&['orders','data','results'].map(k=>p[k]).find(Array.isArray))||[];
+ async function poll(){
+  if(busy) return; busy=true;
+  try{
+   for(const url of ['/api/admin/orders','/api/orders']){
+    try{
+     const r=await fetch(url,{credentials:'same-origin',cache:'no-store'});
+     if(!r.ok) continue;
+     const list=getOrders(await r.json()); if(!Array.isArray(list)) continue;
+     const fresh=[];
+     for(const o of list){
+      const id=String(o.id??o.order_id??o.order_number??''); if(!id) continue;
+      const status=String(o.status||'').toLowerCase();
+      if(status==='cancelled'||status==='canceled'){known.add(id);continue;}
+      if(initialized&&!known.has(id)) fresh.push(o);
+      known.add(id);
+     }
+     initialized=true;
+     if(fresh.length){setDot(true);show(fresh[fresh.length-1]);}
+     return;
+    }catch(e){}
+   }
+  }finally{busy=false;}
+ }
+ close?.addEventListener('click',()=>popup.classList.remove('is-visible'));
+ ordersButton?.addEventListener('click',()=>{setDot(false);popup.classList.remove('is-visible');});
+ poll(); setInterval(poll,8000);
+})();
+</script>
+
+
 
 </body>
 
