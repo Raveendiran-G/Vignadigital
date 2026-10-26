@@ -2050,6 +2050,29 @@ app.get("/api/admin/orders/export", requireAdmin, async (req, res) => {
     }
 });
 
+// Admin: permanently delete specifically selected orders.
+app.post("/api/admin/orders/delete-selected", requireAdmin, async (req, res) => {
+    try {
+        const ids = Array.isArray(req.body?.ids) ? [...new Set(req.body.ids.map(id => String(id)))] : [];
+        if (!ids.length) return res.status(400).json({ message: "Select at least one order to delete." });
+        if (ids.length > 100) return res.status(400).json({ message: "You can delete up to 100 orders at a time." });
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (ids.some(id => !uuidPattern.test(id))) return res.status(400).json({ message: "One or more selected order IDs are invalid." });
+
+        const { data, error } = await supabase
+            .from("restaurant_orders")
+            .delete()
+            .in("id", ids)
+            .select("id");
+        if (error) throw error;
+        res.setHeader("Cache-Control", "no-store");
+        return res.json({ success: true, deleted: (data || []).length });
+    } catch (error) {
+        console.error("Selected-order deletion failed:", error);
+        return res.status(500).json({ message: "Could not delete selected orders." });
+    }
+});
+
 // Admin: permanently delete orders older than 15 days.
 app.post("/api/admin/orders/delete-expired", requireAdmin, async (req, res) => {
     try {

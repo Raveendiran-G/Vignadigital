@@ -667,23 +667,6 @@
   @media(max-width:480px) {
     #newOrderPopup { bottom:10px !important; right:10px !important; max-width:calc(100vw - 20px) !important; }
   }
-  /* Round all four corners of the Orders / Print Bills modal */
-#ordersModal {
-    border-radius: 18px !important;
-    overflow: hidden !important;
-    clip-path: inset(0 round 18px);
-}
-
-/* Keep the modal's scrolling content inside the rounded edges */
-#ordersModal .modal-content {
-    border-radius: 18px !important;
-}
-
-/* Preserve scrolling without square corners */
-#ordersModal .orders-list {
-    overflow-y: auto;
-    border-radius: 0 0 18px 18px;
-}
 </style>
 
 
@@ -2067,7 +2050,7 @@
       .feature-modal{display:none;position:fixed;inset:0;background:#0008;z-index:9999;align-items:center;justify-content:center;padding:16px}
       .feature-modal.show{display:flex}.feature-panel{background:#fff;border-radius:16px;padding:22px;width:min(900px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0003}
       .feature-panel h2{margin-top:0}.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feature-grid label{display:block;font-weight:600;font-size:13px}.feature-grid input,.feature-grid select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px}
-      .feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ai-preview-row,.order-preview-row{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:10px;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center}.ai-preview-row input,.ai-preview-row select{width:100%;padding:8px;border:1px solid #ddd;border-radius:7px}.feature-status{margin-top:10px;color:#7b3422}.feature-close{float:right}.bill-print{font-family:Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:760px;margin:auto}.bill-print h2,.bill-print p{text-align:center}.bill-print table{width:100%;border-collapse:collapse}.bill-print th,.bill-print td{padding:8px;border-bottom:1px dashed #aaa;text-align:left}.bill-print .right{text-align:right}
+      .feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.order-select-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.order-select-tools label{display:flex;align-items:center;gap:7px;font-weight:600}.order-select-checkbox{width:18px;height:18px;cursor:pointer;accent-color:#b91c1c}.order-select-label{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-weight:700}.delete-selected-orders{background:#b91c1c;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer}.delete-selected-orders:disabled{opacity:.55;cursor:not-allowed}.ai-preview-row,.order-preview-row{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:10px;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center}.ai-preview-row input,.ai-preview-row select{width:100%;padding:8px;border:1px solid #ddd;border-radius:7px}.feature-status{margin-top:10px;color:#7b3422}.feature-close{float:right}.bill-print{font-family:Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:760px;margin:auto}.bill-print h2,.bill-print p{text-align:center}.bill-print table{width:100%;border-collapse:collapse}.bill-print th,.bill-print td{padding:8px;border-bottom:1px dashed #aaa;text-align:left}.bill-print .right{text-align:right}
       @media(max-width:650px){.feature-grid{grid-template-columns:1fr}.ai-preview-row,.order-preview-row{grid-template-columns:1fr}}
       @media print{body.printing-bill *{visibility:hidden!important}body.printing-bill #adminPrintArea,body.printing-bill #adminPrintArea *{visibility:visible!important}body.printing-bill #adminPrintArea{position:absolute;inset:0;width:100%;display:block!important}body.printing-bill .feature-modal{display:none!important}}
     </style>
@@ -2077,7 +2060,7 @@
       <div class="feature-actions"><button type="button" class="primary" id="generateAiMenu">Generate Menu</button><button type="button" class="primary" id="saveAiMenu" disabled>Save Selected Items</button></div><p class="feature-status" id="aiMenuStatus" role="status"></p><div id="aiMenuPreview"></div>
     </section></div>
     <div class="feature-modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle"><section class="feature-panel">
-      <button class="feature-close" type="button" data-close-feature="ordersModal">Close ✕</button><h2 id="ordersTitle">🧾 Orders / Print Bills</h2><p>Only orders available to your authenticated admin session are shown here.</p><div class="feature-actions"><button type="button" class="primary" id="refreshOrders">Refresh Orders</button><button type="button" id="downloadPastOrdersPdf">Download All Past Orders as PDF</button><button type="button" id="deleteOldOrders" style="background:#b91c1c;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700">Delete Orders Older Than 15 Days</button></div><p class="feature-status" id="ordersStatus" role="status"></p><div id="ordersList"></div>
+      <button class="feature-close" type="button" data-close-feature="ordersModal">Close ✕</button><h2 id="ordersTitle">🧾 Orders / Print Bills</h2><p>Only orders available to your authenticated admin session are shown here.</p><div class="feature-actions"><button type="button" class="primary" id="refreshOrders">Refresh Orders</button><button type="button" id="downloadPastOrdersPdf">Download All Past Orders as PDF</button><button type="button" id="deleteOldOrders" style="background:#b91c1c;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700">Delete Orders Older Than 15 Days</button></div><div class="order-select-tools"><label><input class="order-select-checkbox" type="checkbox" id="selectAllOrders"> Select all listed orders</label><button type="button" class="delete-selected-orders" id="deleteSelectedOrders" disabled>Delete Selected (0)</button></div><p class="feature-status" id="ordersStatus" role="status"></p><div id="ordersList"></div>
     </section></div>
     <div id="adminPrintArea" style="display:none"></div>
     <script>
@@ -2152,7 +2135,36 @@
         finally { button.disabled = false; }
       });
 
-      async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders",{credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>{const current=String(o.status||"new").toLowerCase();const activeDisabled=["preparing","completed","cancelled"].includes(current);const preparedDisabled=["completed","cancelled"].includes(current);return `<div class="order-preview-row"><div><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>Status: ${esc(current)}</small></div><div class="order-actions"><div class="order-actions-top"><button type="button" data-order-status="active" data-order-id="${esc(o.id)}" ${activeDisabled?"disabled":""}>Active</button><button type="button" data-order-status="prepared" data-order-id="${esc(o.id)}" ${preparedDisabled?"disabled":""}>Prepared</button></div><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div></div>`;}).join("");d.orders.forEach(o=>{list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`)?.addEventListener("click",()=>printOrder(o));list.querySelectorAll(`[data-order-id="${CSS.escape(String(o.id))}"]`).forEach(button=>button.addEventListener("click",async()=>{const next=button.dataset.orderStatus;button.disabled=true;try{const update=await fetch(`/api/admin/orders/${encodeURIComponent(o.id)}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({status:next})});const result=await update.json();if(!update.ok)throw new Error(result.message||"Status update failed");$("ordersStatus").textContent=`${o.order_number||o.id} updated to ${result.order.status}.`;await loadOrders();}catch(error){$("ordersStatus").textContent=error.message;button.disabled=false;}}));});}catch(e){status.textContent=e.message;}}
+      const selectedOrderIds = new Set();
+      $("selectAllOrders").addEventListener("change", () => {
+        document.querySelectorAll("[data-select-order-id]").forEach(box => {
+          box.checked = $("selectAllOrders").checked;
+          if (box.checked) selectedOrderIds.add(box.value); else selectedOrderIds.delete(box.value);
+        });
+        updateSelectedDeleteButton();
+      });
+      $("deleteSelectedOrders").addEventListener("click", async () => {
+        const ids = [...selectedOrderIds];
+        if (!ids.length) { $("ordersStatus").textContent = "Select one or more orders first."; return; }
+        if (!confirm(`Permanently delete ${ids.length} selected order(s)? This cannot be undone.`)) return;
+        const button = $("deleteSelectedOrders"); button.disabled = true; $("ordersStatus").textContent = `Deleting ${ids.length} selected order(s)…`;
+        try {
+          const response = await fetch("/api/admin/orders/delete-selected", { method:"POST", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ids}) });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.message || "Could not delete selected orders.");
+          selectedOrderIds.clear(); $("selectAllOrders").checked = false;
+          $("ordersStatus").textContent = `Permanently deleted ${payload.deleted} selected order(s).`;
+          await loadOrders();
+        } catch (error) { $("ordersStatus").textContent = error.message; updateSelectedDeleteButton(); }
+      });
+      function updateSelectedDeleteButton() {
+        const count = selectedOrderIds.size; const button = $("deleteSelectedOrders");
+        button.textContent = `Delete Selected (${count})`; button.disabled = count === 0;
+        const boxes = [...document.querySelectorAll("[data-select-order-id]")];
+        $("selectAllOrders").checked = boxes.length > 0 && boxes.every(box => box.checked);
+      }
+
+      async function loadOrders(){const status=$("ordersStatus"),list=$("ordersList");status.textContent="Loading orders…";list.innerHTML="";try{const r=await fetch("/api/admin/orders",{credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.message||"Unable to load orders");if(!d.orders.length){selectedOrderIds.clear();$("selectAllOrders").checked=false;updateSelectedDeleteButton();status.textContent="No orders found.";return;}status.textContent=`Loaded ${d.orders.length} order(s).`;list.innerHTML=d.orders.map(o=>{const current=String(o.status||"new").toLowerCase();const activeDisabled=["preparing","completed","cancelled"].includes(current);const preparedDisabled=["completed","cancelled"].includes(current);return `<div class="order-preview-row"><div><label class="order-select-label"><input class="order-select-checkbox" type="checkbox" data-select-order-id value="${esc(o.id)}" ${selectedOrderIds.has(String(o.id))?"checked":""}><span>Select order</span></label><strong>${esc(o.order_number||o.id)}</strong><br>${esc(o.customer_name)} · ${esc(o.customer_phone)}<br><small>${esc(o.order_type||"Takeaway")} · ${esc(o.table_number?"Table "+o.table_number:o.room_number?"Room "+o.room_number:o.delivery_address||"No location")}</small></div><div>${money(o.total_amount)}<br><small>Status: ${esc(current)}</small></div><div class="order-actions"><div class="order-actions-top"><button type="button" data-order-status="active" data-order-id="${esc(o.id)}" ${activeDisabled?"disabled":""}>Active</button><button type="button" data-order-status="prepared" data-order-id="${esc(o.id)}" ${preparedDisabled?"disabled":""}>Prepared</button></div><button type="button" data-print-order="${esc(o.id)}">Print Bill</button></div></div>`;}).join("");list.querySelectorAll("[data-select-order-id]").forEach(box=>box.addEventListener("change",()=>{if(box.checked)selectedOrderIds.add(box.value);else selectedOrderIds.delete(box.value);updateSelectedDeleteButton();}));updateSelectedDeleteButton();d.orders.forEach(o=>{list.querySelector(`[data-print-order="${CSS.escape(String(o.id))}"]`)?.addEventListener("click",()=>printOrder(o));list.querySelectorAll(`[data-order-id="${CSS.escape(String(o.id))}"]`).forEach(button=>button.addEventListener("click",async()=>{const next=button.dataset.orderStatus;button.disabled=true;try{const update=await fetch(`/api/admin/orders/${encodeURIComponent(o.id)}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({status:next})});const result=await update.json();if(!update.ok)throw new Error(result.message||"Status update failed");$("ordersStatus").textContent=`${o.order_number||o.id} updated to ${result.order.status}.`;await loadOrders();}catch(error){$("ordersStatus").textContent=error.message;button.disabled=false;}}));});}catch(e){status.textContent=e.message;}}
       function printOrder(o){const items=Array.isArray(o.items)?o.items:[];const subtotal=Number(o.subtotal_amount??items.reduce((s,i)=>s+Number(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0)),0));const tax=Number(o.tax_amount??Math.round(subtotal*0.05*100)/100);const location=o.order_type==="Dine In"?`Table Number: ${o.table_number||"—"}`:o.order_type==="Room Service"?`Room Number: ${o.room_number||"—"}`:o.order_type==="Delivery"?`Delivery Address: ${o.delivery_address||"—"}`:"Takeaway";const area=$("adminPrintArea");area.innerHTML=`<article class="bill-print"><h2>NEW DESI TADKA</h2><p>ORDER RECEIPT</p><hr><p>Order: ${esc(o.order_number||o.id)}<br>Date: ${esc(o.created_at?new Date(o.created_at).toLocaleString("en-IN"):"")}<br>Customer: ${esc(o.customer_name)}<br>Phone: ${esc(o.customer_phone)}<br>Order Type: ${esc(o.order_type||"Takeaway")}<br>${esc(location)}</p><table><thead><tr><th>Item</th><th>Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td>${Number(i.quantity||0)}</td><td class="right">${money(i.unitPrice)}</td><td class="right">${money(i.lineTotal||Number(i.unitPrice||0)*Number(i.quantity||0))}</td></tr>`).join("")}</tbody></table><p style="text-align:right">Subtotal: ${money(subtotal)}<br>Tax: ${money(tax)}<br><strong>TOTAL: ${money(o.total_amount)}</strong></p><hr><p>Thank you for ordering!</p></article>`;area.style.display="block";document.body.classList.add("printing-bill");window.print();setTimeout(()=>{document.body.classList.remove("printing-bill");area.style.display="none";},500);}
     })();
     </script>
